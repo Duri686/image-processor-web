@@ -7,11 +7,11 @@ import { Label } from "@/components/ui/label"
 import { Input } from "@/components/ui/input"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Checkbox } from "@/components/ui/checkbox"
-import { Progress } from "@/components/ui/progress"
 import { Alert, AlertDescription } from "@/components/ui/alert"
 import { Badge } from "@/components/ui/badge"
-import { downloadMultipleFiles, generateFilename, formatExportSummary, type ExportItem } from "@/lib/download-manager"
+import { downloadMultipleFiles, generateFilename, formatExportSummary, createZip, type ExportItem } from "@/lib/download-manager"
 import { Download, Package, Info } from "lucide-react"
+import { toast } from "sonner"
 
 interface DownloadManagerProps {
   exportItems: ExportItem[]
@@ -32,36 +32,57 @@ export function DownloadManager({ exportItems, disabled = false, onExportComplet
   const [customPattern, setCustomPattern] = useState("")
   const [includeOriginals, setIncludeOriginals] = useState(false)
   const [isExporting, setIsExporting] = useState(false)
-  const [exportProgress, setExportProgress] = useState({ current: 0, total: 0, fileName: "" })
 
   const handleExport = useCallback(async () => {
     if (exportItems.length === 0) return
 
     setIsExporting(true)
-    setExportProgress({ current: 0, total: exportItems.length, fileName: "" })
+    // Use toast to show progress
+    const toastId = Math.random().toString(36).slice(2)
+    toast.loading("Creating ZIP...", { id: toastId, description: "0%", duration: Infinity })
 
     try {
       const pattern = selectedPattern === "custom" ? customPattern : selectedPattern
 
-      await downloadMultipleFiles(
-        exportItems,
-        {
-          namePattern: pattern,
-          includeOriginals,
-        },
-        (completed, total, fileName) => {
-          setExportProgress({ current: completed, total, fileName })
+      // Prepare filenames inside ZIP using current naming pattern
+      const filesForZip = exportItems.map((item) => ({
+        ...item,
+        filename: generateFilename(
+          item.originalName || item.filename,
+          pattern,
+          item.type.split("/")[1],
+        ),
+      }))
+
+      const zipBlob = await createZip(
+        filesForZip,
+        { includeOriginals, createSubfolders: false, namePattern: pattern },
+        (percent: number) => {
+          const p = Math.max(0, Math.min(100, Math.round(percent)))
+          toast("Creating ZIP...", { id: toastId, description: `${p}%`, duration: Infinity })
         },
       )
 
+      // Trigger single ZIP download
+      const zipName = `images-${new Date().toISOString().replace(/[:T]/g, "-").split(".")[0]}.zip`
+      const url = URL.createObjectURL(zipBlob)
+      const a = document.createElement("a")
+      a.href = url
+      a.download = zipName
+      document.body.appendChild(a)
+      a.click()
+      document.body.removeChild(a)
+      URL.revokeObjectURL(url)
+
+      toast.success("Export complete", { id: toastId, description: zipName })
       onExportComplete?.()
     } catch (error) {
       console.error("Export failed:", error)
+      toast.error("Export failed")
     } finally {
       setIsExporting(false)
-      setExportProgress({ current: 0, total: 0, fileName: "" })
     }
-  }, [exportItems, selectedPattern, customPattern, includeOriginals, onExportComplete])
+  }, [exportItems, selectedPattern, customPattern, onExportComplete])
 
   const handleDownloadAll = useCallback(() => {
     exportItems.forEach((item, index) => {
@@ -102,10 +123,12 @@ export function DownloadManager({ exportItems, disabled = false, onExportComplet
     <Card className="p-6 space-y-6">
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-2">
-          <Download className="w-5 h-5 text-primary" />
+          <Download className="w-5 h-5 text-muted-foreground" />
           <h2 className="text-lg font-semibold font-serif">Export Manager</h2>
         </div>
-        <Badge variant="secondary">{formatExportSummary(exportItems)}</Badge>
+        <Badge variant="outline" className="px-2 py-0.5 text-[12px]">
+          {formatExportSummary(exportItems)}
+        </Badge>
       </div>
 
       {/* Export Items List */}
@@ -157,8 +180,8 @@ export function DownloadManager({ exportItems, disabled = false, onExportComplet
         )}
 
         {previewFilename && (
-          <div className="p-2 bg-accent rounded-lg">
-            <p className="text-xs text-muted-foreground">Preview:</p>
+          <div className="p-2 rounded-lg border bg-muted/60">
+            <p className="text-xs text-muted-foreground">Preview</p>
             <p className="text-sm font-mono">{previewFilename}</p>
           </div>
         )}
@@ -181,21 +204,7 @@ export function DownloadManager({ exportItems, disabled = false, onExportComplet
         </div>
       </div>
 
-      {/* Export Progress */}
-      {isExporting && (
-        <div className="space-y-2">
-          <div className="flex items-center justify-between text-sm">
-            <span>Exporting files...</span>
-            <span>
-              {exportProgress.current}/{exportProgress.total}
-            </span>
-          </div>
-          <Progress value={(exportProgress.current / exportProgress.total) * 100} />
-          {exportProgress.fileName && (
-            <p className="text-xs text-muted-foreground">Current: {exportProgress.fileName}</p>
-          )}
-        </div>
-      )}
+      {/* Progress moved to toast notifications */}
 
       {/* Export Buttons */}
       <div className="grid grid-cols-2 gap-3">
@@ -221,11 +230,11 @@ export function DownloadManager({ exportItems, disabled = false, onExportComplet
 
       {/* Export Tips */}
       <Alert>
-        <Info className="h-4 w-4" />
+        <Info className="h-4 w-4 text-muted-foreground" />
         <AlertDescription>
           <div className="space-y-1">
-            <p className="font-medium">Export Tips:</p>
-            <ul className="text-sm space-y-1">
+            <p className="font-medium text-foreground">Export Tips</p>
+            <ul className="text-sm space-y-1 text-muted-foreground">
               <li>• Files download individually to avoid browser limits</li>
               <li>• Use custom patterns for consistent naming</li>
               <li>• Check your browser's download folder</li>

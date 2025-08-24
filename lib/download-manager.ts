@@ -3,6 +3,8 @@
  * Supports ZIP creation, progress tracking, and various export formats
  */
 
+import JSZip from "jszip"
+
 export interface ExportOptions {
   format?: "original" | "zip"
   namePattern?: string // e.g., "{name}_optimized.{ext}"
@@ -16,6 +18,10 @@ export interface ExportItem {
   originalName?: string
   size: number
   type: string
+  // Optional original file info for including originals in ZIP
+  originalBlob?: Blob
+  originalSize?: number
+  originalType?: string
 }
 
 /**
@@ -23,12 +29,68 @@ export interface ExportItem {
  * In a production app, you'd use a library like JSZip
  */
 export const createZipFile = async (files: ExportItem[]): Promise<Blob> => {
-  // For now, we'll create a simple archive by concatenating files
-  // In a real implementation, you'd use JSZip or similar
+  // Deprecated placeholder kept for backward-compat
+  return new Blob(["Use createZip() instead"], { type: "text/plain" })
+}
 
-  // Since we can't easily create ZIP files without a library in the browser,
-  // we'll download files individually but with a delay between each
-  return new Blob(["ZIP creation requires additional library"], { type: "text/plain" })
+/**
+ * Create a ZIP using JSZip with progress callback (0-100)
+ */
+export const createZip = async (
+  files: ExportItem[],
+  options?: { includeOriginals?: boolean; createSubfolders?: boolean; namePattern?: string },
+  onProgress?: (percent: number) => void,
+): Promise<Blob> => {
+  const zip = new JSZip()
+  const includeOriginals = options?.includeOriginals === true
+  const useFolders = options?.createSubfolders === true
+
+  const usedNames = new Set<string>()
+  for (const file of files) {
+    // processed
+    const processedPath = useFolders ? `processed/${file.filename}` : file.filename
+    zip.file(processedPath, file.blob)
+    usedNames.add(processedPath)
+
+    // originals
+    if (includeOriginals && file.originalBlob) {
+      const rawOriginal = file.originalName || file.filename
+      const extFromType = (file.originalType || file.type || "image/png").split("/")[1] || "png"
+      const pattern = options?.namePattern
+      const namedOriginal = pattern
+        ? generateFilename(rawOriginal, pattern, extFromType)
+        : rawOriginal
+      let originalPath = useFolders ? `originals/${namedOriginal}` : namedOriginal
+
+      if (!useFolders) {
+        // avoid collision when no folders
+        if (usedNames.has(originalPath)) {
+          const dot = originalPath.lastIndexOf(".")
+          const name = dot > -1 ? originalPath.slice(0, dot) : originalPath
+          const ext = dot > -1 ? originalPath.slice(dot) : ""
+          let candidate = `${name}-original${ext}`
+          let counter = 1
+          while (usedNames.has(candidate)) {
+            candidate = `${name}-original-${counter}${ext}`
+            counter++
+          }
+          originalPath = candidate
+        }
+      }
+
+      zip.file(originalPath, file.originalBlob)
+      usedNames.add(originalPath)
+    }
+  }
+
+  const blob = await zip.generateAsync(
+    { type: "blob", compression: "DEFLATE", compressionOptions: { level: 6 } },
+    (meta: any) => {
+      if (typeof meta.percent === "number") onProgress?.(meta.percent)
+    },
+  )
+
+  return blob
 }
 
 /**

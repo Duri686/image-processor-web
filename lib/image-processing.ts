@@ -106,6 +106,7 @@ export const processImage = async (file: File, options: ImageProcessingOptions =
     })
 
     const dataUrl = canvas.toDataURL(mimeType, quality)
+    // Preserve sign so negative values (file grew) can be surfaced in UI
     const compressionRatio = ((file.size - blob.size) / file.size) * 100
 
     // Clean up
@@ -116,7 +117,7 @@ export const processImage = async (file: File, options: ImageProcessingOptions =
       dataUrl,
       originalSize: file.size,
       compressedSize: blob.size,
-      compressionRatio: Math.max(0, compressionRatio),
+      compressionRatio,
       width,
       height,
     }

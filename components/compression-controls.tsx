@@ -53,21 +53,30 @@ export function CompressionControls({
   return (
     <Card className="p-6">
       <div className="flex items-center gap-2 mb-6">
-        <Settings2 className="w-5 h-5 text-primary" />
+        <Settings2 className="w-5 h-5 text-muted-foreground" />
         <h2 className="text-lg font-semibold font-serif">Compression Settings</h2>
       </div>
 
       <Tabs defaultValue="presets" className="space-y-4">
-        <TabsList className="grid w-full grid-cols-3">
-          <TabsTrigger value="presets" className="flex items-center gap-1">
+        <TabsList className="grid w-full grid-cols-3 rounded-lg border bg-muted/60 p-1 text-xs">
+          <TabsTrigger
+            value="presets"
+            className="flex items-center gap-1 data-[state=active]:bg-background data-[state=active]:shadow-sm"
+          >
             <Zap className="w-3 h-3" />
             Presets
           </TabsTrigger>
-          <TabsTrigger value="quality" className="flex items-center gap-1">
+          <TabsTrigger
+            value="quality"
+            className="flex items-center gap-1 data-[state=active]:bg-background data-[state=active]:shadow-sm"
+          >
             <Settings2 className="w-3 h-3" />
             Quality
           </TabsTrigger>
-          <TabsTrigger value="target" className="flex items-center gap-1">
+          <TabsTrigger
+            value="target"
+            className="flex items-center gap-1 data-[state=active]:bg-background data-[state=active]:shadow-sm"
+          >
             <Target className="w-3 h-3" />
             Target Size
           </TabsTrigger>
@@ -75,7 +84,7 @@ export function CompressionControls({
 
         <TabsContent value="presets" className="space-y-4">
           <div className="space-y-3">
-            <Label>Compression Preset</Label>
+            <Label className="text-sm font-medium">Compression Preset</Label>
             <Select value={selectedPreset} onValueChange={(value: CompressionPreset) => setSelectedPreset(value)}>
               <SelectTrigger>
                 <SelectValue />
@@ -98,7 +107,7 @@ export function CompressionControls({
 
         <TabsContent value="quality" className="space-y-4">
           <div className="space-y-3">
-            <Label>Quality: {Math.round(quality * 100)}%</Label>
+            <Label className="text-sm font-medium">Quality: {Math.round(quality * 100)}%</Label>
             <Slider
               value={[quality]}
               onValueChange={(value) => onQualityChange(value[0])}
@@ -115,7 +124,7 @@ export function CompressionControls({
 
           <div className="grid grid-cols-2 gap-3">
             <div className="space-y-2">
-              <Label className="text-xs">Max Width (px)</Label>
+              <Label className="text-sm">Max Width (px)</Label>
               <Input
                 type="number"
                 value={maxWidth || ""}
@@ -125,7 +134,7 @@ export function CompressionControls({
               />
             </div>
             <div className="space-y-2">
-              <Label className="text-xs">Max Height (px)</Label>
+              <Label className="text-sm">Max Height (px)</Label>
               <Input
                 type="number"
                 value={maxHeight || ""}
@@ -143,7 +152,7 @@ export function CompressionControls({
 
         <TabsContent value="target" className="space-y-4">
           <div className="space-y-3">
-            <Label>Target File Size</Label>
+            <Label className="text-sm font-medium">Target File Size</Label>
             <div className="flex items-center gap-2">
               <Input
                 type="number"
@@ -161,7 +170,7 @@ export function CompressionControls({
 
           <div className="grid grid-cols-2 gap-3">
             <div className="space-y-2">
-              <Label className="text-xs">Max Width (px)</Label>
+              <Label className="text-sm">Max Width (px)</Label>
               <Input
                 type="number"
                 value={maxWidth || ""}
@@ -171,7 +180,7 @@ export function CompressionControls({
               />
             </div>
             <div className="space-y-2">
-              <Label className="text-xs">Max Height (px)</Label>
+              <Label className="text-sm">Max Height (px)</Label>
               <Input
                 type="number"
                 value={maxHeight || ""}

@@ -49,12 +49,19 @@ export function WebPConverter({ onConvert, quality, onQualityChange, disabled = 
     <Card className="p-6 space-y-6">
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-2">
-          <FileImage className="w-5 h-5 text-primary" />
+          <FileImage className="w-5 h-5 text-muted-foreground" />
           <h2 className="text-lg font-semibold font-serif">WebP Conversion</h2>
         </div>
 
         {webpSupported !== null && (
-          <Badge variant={webpSupported ? "default" : "secondary"} className="flex items-center gap-1">
+          <Badge
+            variant="outline"
+            className={
+              webpSupported
+                ? "flex items-center gap-1 px-2 py-0.5 text-[12px] bg-emerald-50 text-emerald-700 border-emerald-200"
+                : "flex items-center gap-1 px-2 py-0.5 text-[12px] bg-amber-50 text-amber-700 border-amber-200"
+            }
+          >
             {webpSupported ? (
               <>
                 <CheckCircle className="w-3 h-3" />
@@ -83,12 +90,12 @@ export function WebPConverter({ onConvert, quality, onQualityChange, disabled = 
       {/* WebP Benefits */}
       <div className="space-y-3">
         <div className="text-sm text-muted-foreground">
-          <p className="font-medium mb-2">WebP Benefits:</p>
+          <p className="text-sm font-medium mb-2 text-foreground">WebP Benefits</p>
           <ul className="space-y-1 text-xs">
-            <li>• {getSavingsEstimate()} smaller file sizes</li>
-            <li>• Better compression than JPEG/PNG</li>
-            <li>• Supports transparency and animation</li>
-            <li>• Widely supported by modern browsers</li>
+            <li className="leading-relaxed">• {getSavingsEstimate()} smaller file sizes</li>
+            <li className="leading-relaxed">• Better compression than JPEG/PNG</li>
+            <li className="leading-relaxed">• Supports transparency and animation</li>
+            <li className="leading-relaxed">• Widely supported by modern browsers</li>
           </ul>
         </div>
       </div>
@@ -125,10 +132,12 @@ export function WebPConverter({ onConvert, quality, onQualityChange, disabled = 
         )}
 
         {/* Estimated Savings */}
-        <div className="p-3 bg-accent rounded-lg">
+        <div className="p-3 rounded-lg border bg-muted/60">
           <div className="flex items-center justify-between text-sm">
-            <span className="text-muted-foreground">Estimated size reduction:</span>
-            <span className="font-medium text-primary">{getSavingsEstimate()}</span>
+            <span className="text-muted-foreground">Estimated size reduction</span>
+            <Badge variant="secondary" className="ml-2 text-[11px] leading-none">
+              {getSavingsEstimate()}
+            </Badge>
           </div>
         </div>
 

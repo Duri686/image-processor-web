@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useCallback, useEffect } from "react"
+import { useState, useCallback, useEffect, type ChangeEvent } from "react"
 import { Button } from "@/components/ui/button"
 import { Card } from "@/components/ui/card"
 import { Label } from "@/components/ui/label"
@@ -10,6 +10,8 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Slider } from "@/components/ui/slider"
 import { Alert, AlertDescription } from "@/components/ui/alert"
 import { downloadImage } from "@/lib/image-processing"
+import { Badge } from "@/components/ui/badge"
+import { worstContrastForBackgrounds, wcagLevelForText } from "@/lib/utils"
 import { Share2, Download, Palette, Type, Info } from "lucide-react"
 
 interface OGImageGeneratorProps {
@@ -57,10 +59,41 @@ export function OGImageGenerator({ disabled = false }: OGImageGeneratorProps) {
   const [textColor, setTextColor] = useState("#1f2937")
   const [useGradient, setUseGradient] = useState(false)
   const [gradientValue, setGradientValue] = useState(GRADIENT_PRESETS[0].value)
+  // interactive gradient controls
+  const [gradientStart, setGradientStart] = useState<string>("#667eea")
+  const [gradientEnd, setGradientEnd] = useState<string>("#764ba2")
+  const [gradientAngle, setGradientAngle] = useState<number>(135)
   const [fontSize, setFontSize] = useState(72)
   const [subtitleSize, setSubtitleSize] = useState(36)
   const [generatedImage, setGeneratedImage] = useState<{ blob: Blob; dataUrl: string } | null>(null)
   const [isGenerating, setIsGenerating] = useState(false)
+
+  // Contrast helper: compute worst-case contrast for current background(s)
+  const getContrastInfo = useCallback(
+    (px: number, isBold = false) => {
+      const isLarge = px >= 24 || (isBold && px >= 19)
+      const backgrounds = useGradient ? [gradientStart, gradientEnd] : [backgroundColor]
+      const ratio = worstContrastForBackgrounds(textColor, backgrounds)
+      const { level } = wcagLevelForText(ratio, isLarge)
+      const badgeClass =
+        level === "Fail"
+          ? "bg-red-50 text-red-700 border-red-200"
+          : level === "AA Large"
+          ? "bg-amber-50 text-amber-700 border-amber-200"
+          : "bg-emerald-50 text-emerald-700 border-emerald-200"
+      const friendly =
+        level === "Fail"
+          ? "Readability: Poor"
+          : level === "AA Large"
+          ? "Readability: Good (for large text)"
+          : "Readability: Excellent"
+      const suggest = isLarge ? "Recommended ≥ 3.0:1 (large text)" : "Recommended ≥ 4.5:1 (body text)"
+      const tooltip = `Contrast ${ratio.toFixed(1)}:1 • Standard ${level} • ${suggest}`
+      const label = `${ratio.toFixed(1)}:1 • ${level}`
+      return { ratio, level, badgeClass, label, friendly, tooltip }
+    },
+    [useGradient, gradientStart, gradientEnd, backgroundColor, textColor]
+  )
 
   const generateAdvancedOGImage = useCallback(async () => {
     const canvas = document.createElement("canvas")
@@ -71,12 +104,40 @@ export function OGImageGenerator({ disabled = false }: OGImageGeneratorProps) {
     // Clear canvas
     ctx.clearRect(0, 0, canvas.width, canvas.height)
 
-    // Apply background
-    if (useGradient) {
-      // Create gradient
-      const gradient = ctx.createLinearGradient(0, 0, canvas.width, canvas.height)
-      // Parse gradient string and apply (simplified)
-      ctx.fillStyle = backgroundColor // Fallback to solid color for now
+    // Apply background (solid or gradient)
+    if (useGradient && gradientValue) {
+      // compute direction from angle (CSS: 0deg is pointing up, 90deg right)
+      const angleRad = (gradientAngle - 90) * (Math.PI / 180) // adjust so 0deg is to the right for canvas vector math
+      const cx = canvas.width / 2
+      const cy = canvas.height / 2
+      const vx = Math.cos(angleRad)
+      const vy = Math.sin(angleRad)
+      const half = Math.hypot(canvas.width, canvas.height) / 2
+      const x0 = cx - vx * half
+      const y0 = cy - vy * half
+      const x1 = cx + vx * half
+      const y1 = cy + vy * half
+
+      const lg = ctx.createLinearGradient(x0, y0, x1, y1)
+      // extract hex/rgb/rgba from CSS gradient string
+      const colorRegex = /(#[0-9a-fA-F]{3,8}|rgba?\([^\)]+\))/g
+      let colors = gradientValue.match(colorRegex) || []
+      // if user chose custom colors, override parsed colors
+      if (gradientStart && gradientEnd) {
+        colors = [gradientStart, gradientEnd]
+      }
+
+      if (colors.length >= 2) {
+        // distribute color stops evenly when explicit stops are not parsed
+        colors.forEach((c: string, i: number) => {
+          const t = colors.length === 1 ? 0 : i / (colors.length - 1)
+          lg.addColorStop(Math.max(0, Math.min(1, t)), c)
+        })
+        ctx.fillStyle = lg
+      } else {
+        // fallback to solid if parsing failed
+        ctx.fillStyle = backgroundColor
+      }
       ctx.fillRect(0, 0, canvas.width, canvas.height)
     } else {
       ctx.fillStyle = backgroundColor
@@ -147,7 +208,23 @@ export function OGImageGenerator({ disabled = false }: OGImageGeneratorProps) {
     const dataUrl = canvas.toDataURL("image/png")
 
     return { blob, dataUrl }
-  }, [selectedTemplate, title, subtitle, backgroundColor, textColor, useGradient, fontSize, subtitleSize])
+  }, [selectedTemplate, title, subtitle, backgroundColor, textColor, useGradient, fontSize, subtitleSize, gradientValue, gradientStart, gradientEnd, gradientAngle])
+
+  // Auto toggle gradient mode when template changes
+  useEffect(() => {
+    if (selectedTemplate === "gradient") {
+      setUseGradient(true)
+    } else {
+      setUseGradient(false)
+    }
+  }, [selectedTemplate])
+
+  // keep gradientValue in sync with interactive picks for preview string (optional)
+  useEffect(() => {
+    if (useGradient) {
+      setGradientValue(`linear-gradient(${gradientAngle}deg, ${gradientStart} 0%, ${gradientEnd} 100%)`)
+    }
+  }, [useGradient, gradientStart, gradientEnd, gradientAngle])
 
   const handleGenerate = useCallback(async () => {
     setIsGenerating(true)
@@ -181,12 +258,12 @@ export function OGImageGenerator({ disabled = false }: OGImageGeneratorProps) {
     }, 500)
 
     return () => clearTimeout(timer)
-  }, [title, subtitle, backgroundColor, textColor, selectedTemplate, fontSize, subtitleSize, handleGenerate])
+  }, [title, subtitle, backgroundColor, textColor, selectedTemplate, fontSize, subtitleSize, useGradient, gradientValue, gradientStart, gradientEnd, gradientAngle, handleGenerate])
 
   return (
     <Card className="p-6 space-y-6">
       <div className="flex items-center gap-2">
-        <Share2 className="w-5 h-5 text-primary" />
+        <Share2 className="w-5 h-5 text-muted-foreground" />
         <h2 className="text-lg font-semibold font-serif">OG Image Generator</h2>
       </div>
 
@@ -237,7 +314,7 @@ export function OGImageGenerator({ disabled = false }: OGImageGeneratorProps) {
       {/* Typography Controls */}
       <div className="space-y-4">
         <div className="flex items-center gap-2">
-          <Type className="w-4 h-4 text-primary" />
+          <Type className="w-4 h-4 text-muted-foreground" />
           <Label className="text-sm font-medium">Typography</Label>
         </div>
 
@@ -266,65 +343,157 @@ export function OGImageGenerator({ disabled = false }: OGImageGeneratorProps) {
             />
           </div>
         </div>
+
+        {useGradient && (
+          <div className="space-y-3">
+            <div className="flex items-center gap-2">
+              <Label className="text-sm font-medium">Gradient</Label>
+            </div>
+
+            {/* Gradient color pickers */}
+            <div className="grid grid-cols-2 gap-4">
+              <div className="space-y-2">
+                <Label className="text-xs">Start</Label>
+                <div className="flex items-center gap-2">
+                  <Input
+                    type="color"
+                    value={gradientStart}
+                    onChange={(e: ChangeEvent<HTMLInputElement>) => { setGradientStart(e.target.value); setUseGradient(true) }}
+                    className="w-12 h-8 p-1 border rounded"
+                    disabled={disabled || isGenerating}
+                  />
+                  <Input
+                    value={gradientStart}
+                    onChange={(e: ChangeEvent<HTMLInputElement>) => { setGradientStart(e.target.value); setUseGradient(true) }}
+                    className="flex-1 text-xs"
+                    disabled={disabled || isGenerating}
+                  />
+                </div>
+              </div>
+              <div className="space-y-2">
+                <Label className="text-xs">End</Label>
+                <div className="flex items-center gap-2">
+                  <Input
+                    type="color"
+                    value={gradientEnd}
+                    onChange={(e: ChangeEvent<HTMLInputElement>) => { setGradientEnd(e.target.value); setUseGradient(true) }}
+                    className="w-12 h-8 p-1 border rounded"
+                    disabled={disabled || isGenerating}
+                  />
+                  <Input
+                    value={gradientEnd}
+                    onChange={(e: ChangeEvent<HTMLInputElement>) => { setGradientEnd(e.target.value); setUseGradient(true) }}
+                    className="flex-1 text-xs"
+                    disabled={disabled || isGenerating}
+                  />
+                </div>
+              </div>
+            </div>
+
+            {/* Gradient angle */}
+            <div className="space-y-2">
+              <Label className="text-xs">Angle: {gradientAngle}°</Label>
+              <Slider
+                value={[gradientAngle]}
+                onValueChange={(v: number[]) => { setGradientAngle(v[0]); setUseGradient(true) }}
+                min={0}
+                max={360}
+                step={1}
+                disabled={disabled || isGenerating}
+              />
+            </div>
+
+            {/* Quick presets */}
+            <div className="grid grid-cols-3 gap-2">
+              {GRADIENT_PRESETS.map((p) => (
+                <Button
+                  key={p.name}
+                  variant="outline"
+                  size="sm"
+                  className="h-8 text-[11px] bg-transparent"
+                  onClick={() => {
+                    setUseGradient(true)
+                    setGradientValue(p.value)
+                    // try to parse two colors for start/end for consistency
+                    const m = p.value.match(/(#[0-9a-fA-F]{3,8}|rgba?\([^\)]+\))/g) || []
+                    if (m[0]) setGradientStart(m[0])
+                    if (m[1]) setGradientEnd(m[1])
+                  }}
+                  style={{ background: p.value, color: "#fff" }}
+                >
+                  {p.name}
+                </Button>
+              ))}
+            </div>
+          </div>
+        )}
       </div>
 
       {/* Color Controls */}
       <div className="space-y-4">
         <div className="flex items-center gap-2">
-          <Palette className="w-4 h-4 text-primary" />
+          <Palette className="w-4 h-4 text-muted-foreground" />
           <Label className="text-sm font-medium">Colors</Label>
         </div>
 
-        {/* Color Presets */}
-        <div className="grid grid-cols-4 gap-2">
-          {BACKGROUND_PRESETS.map((preset) => (
-            <Button
-              key={preset.name}
-              variant="outline"
-              size="sm"
-              onClick={() => handlePresetSelect(preset)}
-              className="h-8 text-xs bg-transparent"
-              style={{ backgroundColor: preset.value, color: preset.textColor }}
-            >
-              {preset.name}
-            </Button>
-          ))}
-        </div>
-
-        {/* Custom Colors */}
-        <div className="grid grid-cols-2 gap-4">
-          <div className="space-y-2">
-            <Label className="text-xs">Background</Label>
-            <div className="flex items-center gap-2">
-              <Input
-                type="color"
-                value={backgroundColor}
-                onChange={(e) => setBackgroundColor(e.target.value)}
-                className="w-12 h-8 p-1 border rounded"
-                disabled={disabled || isGenerating}
-              />
-              <Input
-                value={backgroundColor}
-                onChange={(e) => setBackgroundColor(e.target.value)}
-                className="flex-1 text-xs"
-                disabled={disabled || isGenerating}
-              />
+        {/* Solid color tools are hidden when gradient mode is on */}
+        {!useGradient && (
+          <>
+            {/* Color Presets (Solid) */}
+            <div className="grid grid-cols-4 gap-2">
+              {BACKGROUND_PRESETS.map((preset) => (
+                <Button
+                  key={preset.name}
+                  variant="outline"
+                  size="sm"
+                  onClick={() => handlePresetSelect(preset)}
+                  className="h-8 text-xs bg-transparent"
+                  style={{ backgroundColor: preset.value, color: preset.textColor }}
+                >
+                  {preset.name}
+                </Button>
+              ))}
             </div>
-          </div>
 
+            {/* Background (Solid) */}
+            <div className="grid grid-cols-2 gap-4">
+              <div className="space-y-2">
+                <Label className="text-xs">Background</Label>
+                <div className="flex items-center gap-2">
+                  <Input
+                    type="color"
+                    value={backgroundColor}
+                    onChange={(e: ChangeEvent<HTMLInputElement>) => setBackgroundColor(e.target.value)}
+                    className="w-12 h-8 p-1 border rounded"
+                    disabled={disabled || isGenerating}
+                  />
+                  <Input
+                    value={backgroundColor}
+                    onChange={(e: ChangeEvent<HTMLInputElement>) => setBackgroundColor(e.target.value)}
+                    className="flex-1 text-xs"
+                    disabled={disabled || isGenerating}
+                  />
+                </div>
+              </div>
+            </div>
+          </>
+        )}
+
+        {/* Text Color is always available */}
+        <div className="grid grid-cols-2 gap-4">
           <div className="space-y-2">
             <Label className="text-xs">Text Color</Label>
             <div className="flex items-center gap-2">
               <Input
                 type="color"
                 value={textColor}
-                onChange={(e) => setTextColor(e.target.value)}
+                onChange={(e: ChangeEvent<HTMLInputElement>) => setTextColor(e.target.value)}
                 className="w-12 h-8 p-1 border rounded"
                 disabled={disabled || isGenerating}
               />
               <Input
                 value={textColor}
-                onChange={(e) => setTextColor(e.target.value)}
+                onChange={(e: ChangeEvent<HTMLInputElement>) => setTextColor(e.target.value)}
                 className="flex-1 text-xs"
                 disabled={disabled || isGenerating}
               />
@@ -356,6 +525,32 @@ export function OGImageGenerator({ disabled = false }: OGImageGeneratorProps) {
           <div className="text-xs text-muted-foreground text-center">
             Size: {(generatedImage.blob.size / 1024).toFixed(1)} KB • 1200×630 pixels
           </div>
+
+          {/* Contrast badges */}
+          <div className="flex items-center justify-center gap-2 flex-wrap">
+            {(() => {
+              const t = getContrastInfo(fontSize, true)
+              const s = getContrastInfo(subtitleSize, false)
+              return (
+                <>
+                  <Badge
+                    variant="outline"
+                    className={`px-2 py-0.5 text-[11px] ${t.badgeClass}`}
+                    title={t.tooltip}
+                  >
+                    Title readability: {t.friendly.replace('Readability: ', '')}
+                  </Badge>
+                  <Badge
+                    variant="outline"
+                    className={`px-2 py-0.5 text-[11px] ${s.badgeClass}`}
+                    title={s.tooltip}
+                  >
+                    Subtitle readability: {s.friendly.replace('Readability: ', '')}
+                  </Badge>
+                </>
+              )
+            })()}
+          </div>
         </div>
       )}
 
@@ -367,11 +562,11 @@ export function OGImageGenerator({ disabled = false }: OGImageGeneratorProps) {
 
       {/* Usage Tips */}
       <Alert>
-        <Info className="h-4 w-4" />
+        <Info className="h-4 w-4 text-muted-foreground" />
         <AlertDescription>
           <div className="space-y-2">
-            <p className="font-medium">OG Image Best Practices:</p>
-            <ul className="text-sm space-y-1">
+            <p className="font-medium text-foreground">OG Image Best Practices</p>
+            <ul className="text-sm space-y-1 text-muted-foreground">
               <li>• Use high contrast between text and background</li>
               <li>• Keep text large and readable (minimum 40px)</li>
               <li>• Optimal size is 1200×630 pixels (1.91:1 ratio)</li>
@@ -385,7 +580,7 @@ export function OGImageGenerator({ disabled = false }: OGImageGeneratorProps) {
       {generatedImage && (
         <div className="space-y-2">
           <Label className="text-sm font-medium">HTML Meta Tags</Label>
-          <div className="p-3 bg-muted rounded-lg">
+          <div className="p-3 rounded-lg border bg-muted/60">
             <code className="text-xs text-muted-foreground">
               {`<meta property="og:image" content="/og-image.png" />
 <meta property="og:image:width" content="1200" />

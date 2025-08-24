@@ -19,7 +19,59 @@ export const metadata: Metadata = {
   title: "Image Optimizer - Professional Image Processing Tool",
   description:
     "Compress, convert, and optimize images directly in your browser. Generate favicons and OG images with ease.",
-  generator: "v0.app",
+  metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL ?? "http://localhost:3000"),
+  keywords: [
+    "image optimization",
+    "image compressor",
+    "image converter",
+    "webp",
+    "png",
+    "jpeg",
+    "favicon generator",
+    "og image",
+  ],
+  authors: [{ name: "Image Optimizer" }],
+  creator: "Image Optimizer",
+  publisher: "Image Optimizer",
+  icons: {
+    icon: "/favicon.ico",
+  },
+  alternates: {
+    canonical: "/",
+  },
+  robots: {
+    index: true,
+    follow: true,
+    googleBot: {
+      index: true,
+      follow: true,
+      noimageindex: false,
+    },
+  },
+  // openGraph: {
+  //   type: "website",
+  //   locale: "en_US",
+  //   url: "/",
+  //   siteName: "Image Optimizer",
+  //   title: "Image Optimizer - Professional Image Processing Tool",
+  //   description:
+  //     "Compress, convert, and optimize images directly in your browser. Generate favicons and OG images with ease.",
+  //   images: [
+  //     {
+  //       url: "/placeholder-logo.png",
+  //       width: 1200,
+  //       height: 630,
+  //       alt: "Image Optimizer",
+  //     },
+  //   ],
+  // },
+  // twitter: {
+  //   card: "summary_large_image",
+  //   title: "Image Optimizer - Professional Image Processing Tool",
+  //   description:
+  //     "Compress, convert, and optimize images directly in your browser. Generate favicons and OG images with ease.",
+  //   images: ["/placeholder-logo.png"],
+  // },
 }
 
 export default function RootLayout({

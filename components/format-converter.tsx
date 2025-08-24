@@ -26,7 +26,7 @@ export function FormatConverter({ onConvert, quality, onQualityChange, disabled 
       supportsTransparency: false,
       compression: "Lossy",
       savings: "60-80%",
-      color: "bg-blue-100 text-blue-800",
+      color: "bg-accent text-foreground",
     },
     png: {
       name: "PNG",
@@ -34,7 +34,7 @@ export function FormatConverter({ onConvert, quality, onQualityChange, disabled 
       supportsTransparency: true,
       compression: "Lossless",
       savings: "10-30%",
-      color: "bg-green-100 text-green-800",
+      color: "bg-accent text-foreground",
     },
     webp: {
       name: "WebP",
@@ -42,7 +42,7 @@ export function FormatConverter({ onConvert, quality, onQualityChange, disabled 
       supportsTransparency: true,
       compression: "Both",
       savings: "20-50%",
-      color: "bg-primary/10 text-primary",
+      color: "bg-accent text-foreground",
     },
   }
 
@@ -72,7 +72,7 @@ export function FormatConverter({ onConvert, quality, onQualityChange, disabled 
             <SelectItem value="webp">
               <div className="flex items-center gap-2">
                 <span>WebP</span>
-                <Badge variant="secondary" className="text-xs">
+                <Badge variant="default" className="text-xs">
                   Recommended
                 </Badge>
               </div>

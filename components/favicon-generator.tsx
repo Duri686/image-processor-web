@@ -100,19 +100,23 @@ export function FaviconGenerator({ selectedFiles, disabled = false }: FaviconGen
             {selectedFiles.map((file, index) => (
               <div
                 key={index}
-                className={`p-3 border rounded-lg cursor-pointer transition-colors ${
+                className={`p-3 border rounded-lg cursor-pointer transition-colors min-w-0 w-full ${
                   selectedFile === file ? "border-primary bg-primary/5" : "border-border hover:border-primary/50"
                 }`}
                 onClick={() => setSelectedFile(file)}
               >
-                <div className="flex items-center justify-between">
-                  <div className="flex-1 min-w-0">
-                    <p className="text-sm font-medium truncate">{file.name}</p>
-                    <p className="text-xs text-muted-foreground">
+                <div className="grid grid-cols-[minmax(0,1fr)_auto] items-center gap-2 min-w-0 w-full">
+                  <div className="min-w-0 overflow-hidden basis-0">
+                    <p className="text-sm font-medium truncate max-w-full" title={file.name}>{file.name}</p>
+                    <p className="text-xs text-muted-foreground truncate max-w-full">
                       {(file.size / 1024).toFixed(1)} KB • {file.type}
                     </p>
                   </div>
-                  {selectedFile === file && <Badge variant="default">Selected</Badge>}
+                  {selectedFile === file && (
+                    <Badge variant="default" className="shrink-0 ml-1">
+                      Selected
+                    </Badge>
+                  )}
                 </div>
               </div>
             ))}

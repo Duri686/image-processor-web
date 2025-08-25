@@ -3,6 +3,11 @@
 > A pure client-side web tool for image optimization, compression, and format conversion — all in your browser, no server required.
 > 基于纯浏览器端的图像处理工具，支持压缩、优化与格式转换，无需服务器即可完成。
 
+[![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
+[![Cloudflare Pages](https://img.shields.io/badge/Deploy-Cloudflare_Pages-orange)](https://pages.cloudflare.com/)
+[![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg)](CONTRIBUTING.md)
+[![Stars](https://img.shields.io/github/stars/Duri686/image-processor-web.svg?style=social)](https://github.com/Duri686/image-processor-web)
+
 🌐 **Live Demo:** [img.geo4ai.com](https://img.geo4ai.com)
 
 ---
@@ -102,16 +107,27 @@ Open [http://localhost:3000](http://localhost:3000)
 
 ### 4. Build & Deploy
 
+本项目推荐使用 **Cloudflare Pages + @cloudflare/next-on-pages** 部署：
+
+- Build Command：
+
 ```bash
-yarn build
+npx @cloudflare/next-on-pages@1
 ```
 
-Deploy to **Cloudflare Pages** → set **Build Command** = `yarn build` & **Output Directory** = `.next`
+- Output Directory：
+
+```
+.vercel/output/static
+```
+
+- Runtime Compatibility Flag：在 Pages 控制台 Settings → Functions/Runtime 中为 Production/Preview 添加：
+  - `nodejs_compat`（若列表无此项，可选择 `node` 宏标志）
 
 Notes / 说明：
 
-* 本项目为纯前端（无后端接口），`next.config.mjs` 中 `images.unoptimized = true`，无需 Next Image 优化服务。
-* 若使用 Cloudflare Pages 原生 Next.js 支持，请确保不依赖 SSR/边缘函数；本项目以客户端渲染为主。
+* 本项目为纯前端（无后端接口），`next.config.mjs` 中 `images.unoptimized = true`。
+* 已在仓库加入 `wrangler.toml` 以声明 `compatibility_flags = ["nodejs_compat"]`（建议同时在控制台也开启）。
 
 #### Other scripts / 其他脚本
 

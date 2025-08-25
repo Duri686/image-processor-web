@@ -2,6 +2,16 @@
   "name": "image-processor-web",
   "version": "0.1.0",
   "private": true,
+  "license": "MIT",
+  "author": "GEO4AI团队",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Duri686/image-processor-web.git"
+  },
+  "bugs": {
+    "url": "https://github.com/Duri686/image-processor-web/issues"
+  },
+  "homepage": "https://img.geo4ai.com",
   "scripts": {
     "build": "next build",
     "dev": "next dev",

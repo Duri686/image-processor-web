@@ -134,7 +134,53 @@ className={`${
 </div>
 ```
 
-## 6. Special Component Design Patterns
+## 6. Tabs Design Specifications
+
+### 6.1 Modern Tab Container
+```tsx
+// Main tab container - Pure white background + Elegant shadows
+<TabsList className="w-full h-auto grid grid-cols-1 sm:grid-cols-3 gap-3 sm:gap-2 rounded-2xl bg-white shadow-lg shadow-gray-200/50 p-4 sm:p-3 text-sm border border-gray-100">
+```
+
+### 6.2 Tab Trigger Design
+```tsx
+// Main tab trigger - Modern interactive effects
+<TabsTrigger className="flex items-center justify-start gap-3 h-16 sm:h-14 px-5 sm:px-4 rounded-xl font-medium transition-all duration-300 data-[state=active]:bg-primary data-[state=active]:text-white data-[state=active]:shadow-lg data-[state=active]:shadow-primary/25 data-[state=active]:scale-[1.02] hover:bg-gray-50 hover:shadow-md text-gray-700 text-base sm:text-sm border border-transparent data-[state=active]:border-primary/20">
+  <div className="p-2.5 sm:p-2 rounded-lg bg-gray-100 data-[state=active]:bg-white/20 text-gray-600 data-[state=active]:text-white">
+    <Sliders className="w-5 h-5 sm:w-4 sm:h-4" />
+  </div>
+  <span className="font-semibold sm:font-medium">Tab Name</span>
+</TabsTrigger>
+```
+
+### 6.3 Sub-level Tab Design
+```tsx
+// Sub-level tab container - Lightweight design
+<TabsList className="inline-flex h-auto min-w-full gap-2 rounded-xl bg-white shadow-md shadow-gray-200/30 p-3 text-sm border border-gray-100">
+  <TabsTrigger className="flex items-center gap-2 h-11 px-4 rounded-lg font-medium transition-all duration-300 data-[state=active]:bg-primary data-[state=active]:text-white data-[state=active]:shadow-lg data-[state=active]:shadow-primary/20 hover:bg-gray-50 hover:shadow-sm border border-transparent data-[state=active]:border-primary/20">
+    <div className="w-2.5 h-2.5 rounded-full bg-gray-400 data-[state=active]:bg-white/80"></div>
+    <span>Sub Tab</span>
+  </TabsTrigger>
+</TabsList>
+```
+
+### 6.4 Badge Component Design
+```tsx
+// Badge component color optimization
+<Badge variant="secondary" className="ml-1 text-xs sm:text-[10px] leading-none bg-gray-200 text-gray-700 data-[state=active]:bg-white/30 data-[state=active]:text-white border-0 px-2 py-1 sm:px-1.5 sm:py-0.5">
+  {count}
+</Badge>
+```
+
+### 6.5 Design Principles
+- **Pure White Background**: Avoid over-flattening, use `bg-white` instead of semi-transparent backgrounds
+- **Elegant Shadows**: `shadow-lg shadow-gray-200/50` provides clear visual hierarchy
+- **Active State**: Primary color background + white text + dynamic shadow effects
+- **Interactive Feedback**: Hover states, micro-scale effects `scale-[1.02]`, border highlights
+- **Responsive Design**: Height and spacing adaptation for mobile and desktop
+- **Visual Consistency**: Unified design language between main and sub-level tabs
+
+## 7. Special Component Design Patterns
 
 ### 6.1 Empty State Design
 ```tsx

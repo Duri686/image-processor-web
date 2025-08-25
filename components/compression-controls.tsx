@@ -143,7 +143,7 @@ export function CompressionControls({
       </div>
 
       <Tabs defaultValue="presets" className="space-y-6">
-        <TabsList className="grid w-full grid-cols-1 sm:grid-cols-3 gap-2 sm:gap-0 rounded-xl border bg-white/80 backdrop-blur-sm p-3 sm:p-1 border-white/40">
+        <TabsList className="grid w-full grid-cols-1 sm:grid-cols-3 gap-2 sm:gap-0 rounded-xl bg-white/60 backdrop-blur-sm border border-gray-200 p-3 sm:p-1 shadow-sm">
           <TabsTrigger
             value="presets"
             className="flex items-center justify-start gap-3 h-12 sm:h-10 px-4 rounded-lg font-medium transition-all duration-200 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground data-[state=active]:shadow-md hover:bg-white/80 text-base sm:text-sm"
@@ -168,16 +168,16 @@ export function CompressionControls({
         </TabsList>
 
         <TabsContent value="presets" className="mt-4 sm:mt-6">
-          <div className="p-4 sm:p-6 bg-white/50 backdrop-blur-sm rounded-xl border border-white/30">
+          <div className="p-4 sm:p-6 bg-white/60 backdrop-blur-sm rounded-xl border border-gray-200 shadow-sm">
             <div className="flex items-center gap-2 mb-4">
               <div className="w-2 h-2 rounded-full bg-primary"></div>
               <Label className="text-base font-semibold text-gray-900">Compression Preset</Label>
             </div>
             <Select value={selectedPreset} onValueChange={(value: CompressionPreset) => setSelectedPreset(value)}>
-              <SelectTrigger className="h-12 sm:h-14 rounded-xl bg-white/80 backdrop-blur-sm border border-white/40 text-base font-medium text-gray-900 hover:bg-white/90 focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all duration-200">
+              <SelectTrigger className="h-12 sm:h-14 rounded-xl bg-white/90 backdrop-blur-sm border border-gray-300 text-base font-medium text-gray-900 hover:bg-white focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all duration-200">
                 <SelectValue className="text-gray-900" />
               </SelectTrigger>
-              <SelectContent className="rounded-xl border border-white/40 bg-white/95 backdrop-blur-md shadow-lg">
+              <SelectContent className="rounded-xl border border-gray-200 bg-white/95 backdrop-blur-md shadow-lg">
                 <SelectItem value="web" className="rounded-lg">
                   <div className="flex items-center gap-2">
                     <div className="w-2 h-2 rounded-full bg-blue-500"></div>
@@ -223,7 +223,7 @@ export function CompressionControls({
               </SelectContent>
             </Select>
             
-            <Alert className="mt-4 bg-blue-50/40 backdrop-blur-sm border border-blue-200/50 rounded-xl">
+            <Alert className="mt-4 bg-blue-50/60 backdrop-blur-sm border border-blue-200 rounded-xl shadow-sm">
               <Info className="h-4 w-4 text-blue-600" />
               <AlertDescription>
                 <p className="font-semibold text-gray-900 mb-1">Quick Start</p>
@@ -263,7 +263,7 @@ export function CompressionControls({
         </TabsContent>
 
         <TabsContent value="quality" className="mt-4 sm:mt-6 space-y-4">
-          <div className="p-4 sm:p-6 bg-white/50 backdrop-blur-sm rounded-xl border border-white/30">
+          <div className="p-4 sm:p-6 bg-white/60 backdrop-blur-sm rounded-xl border border-gray-200 shadow-sm">
             <div className="space-y-4">
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-2">
@@ -296,7 +296,7 @@ export function CompressionControls({
             </div>
           </div>
 
-          <div className="p-4 sm:p-6 bg-white/50 backdrop-blur-sm rounded-xl border border-white/30">
+          <div className="p-4 sm:p-6 bg-white/60 backdrop-blur-sm rounded-xl border border-gray-200 shadow-sm">
             <div className="flex items-center gap-2 mb-4 sm:mb-6">
               <div className="w-2 h-2 rounded-full bg-primary"></div>
               <Label className="text-base font-semibold text-gray-900">Dimension Limits</Label>
@@ -310,7 +310,7 @@ export function CompressionControls({
                   onChange={(e) => setMaxWidth(Number(e.target.value) || 0)}
                   placeholder="Auto"
                   disabled={disabled}
-                  className="h-12 sm:h-14 rounded-xl bg-white/80 backdrop-blur-sm border border-white/40 text-base text-gray-900 placeholder:text-gray-500 hover:bg-white/90 focus:bg-white/95 focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all duration-200"
+                  className="h-12 sm:h-14 rounded-xl bg-white/90 backdrop-blur-sm border border-gray-300 text-base text-gray-900 placeholder:text-gray-500 hover:bg-white/90 focus:bg-white/95 focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all duration-200"
                 />
               </div>
               <div className="space-y-2 sm:space-y-3">
@@ -321,7 +321,7 @@ export function CompressionControls({
                   onChange={(e) => setMaxHeight(Number(e.target.value) || 0)}
                   placeholder="Auto"
                   disabled={disabled}
-                  className="h-12 sm:h-14 rounded-xl bg-white/80 backdrop-blur-sm border border-white/40 text-base text-gray-900 placeholder:text-gray-500 hover:bg-white/90 focus:bg-white/95 focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all duration-200"
+                  className="h-12 sm:h-14 rounded-xl bg-white/90 backdrop-blur-sm border border-gray-300 text-base text-gray-900 placeholder:text-gray-500 hover:bg-white/90 focus:bg-white/95 focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all duration-200"
                 />
               </div>
             </div>
@@ -330,7 +330,7 @@ export function CompressionControls({
           <Button 
             onClick={handleQualityCompress} 
             disabled={disabled} 
-            className="w-full h-12 rounded-xl bg-primary text-primary-foreground font-medium shadow-md hover:bg-primary/90 transition-all"
+            className="w-full h-12 rounded-xl bg-primary text-primary-foreground font-medium shadow-lg hover:bg-primary/90 hover:shadow-xl transition-all duration-300 border border-primary/20"
           >
             <Gauge className="w-4 h-4 mr-2" />
             Compress with Quality
@@ -338,7 +338,7 @@ export function CompressionControls({
         </TabsContent>
 
         <TabsContent value="target" className="mt-4 sm:mt-6 space-y-4">
-          <div className="p-4 sm:p-6 bg-white/50 backdrop-blur-sm rounded-xl border border-white/30">
+          <div className="p-4 sm:p-6 bg-white/60 backdrop-blur-sm rounded-xl border border-gray-200 shadow-sm">
             <div className="flex items-center gap-2 mb-4">
               <div className="w-2 h-2 rounded-full bg-primary"></div>
               <Label className="text-base font-semibold text-gray-900">Target File Size</Label>
@@ -356,7 +356,7 @@ export function CompressionControls({
               </div>
             </div>
             
-            <Alert className="mt-4 bg-amber-50/60 border-amber-200">
+            <Alert className="mt-4 bg-amber-50/60 backdrop-blur-sm border border-amber-200 rounded-xl shadow-sm">
               <Target className="h-4 w-4 text-amber-600" />
               <AlertDescription>
                 <p className="font-semibold text-gray-900 mb-1">Smart Compression</p>
@@ -365,7 +365,7 @@ export function CompressionControls({
             </Alert>
           </div>
 
-          <div className="p-4 sm:p-6 bg-white/50 backdrop-blur-sm rounded-xl border border-white/30">
+          <div className="p-4 sm:p-6 bg-white/60 backdrop-blur-sm rounded-xl border border-gray-200 shadow-sm">
             <div className="flex items-center gap-2 mb-4 sm:mb-6">
               <div className="w-2 h-2 rounded-full bg-primary"></div>
               <Label className="text-base font-semibold text-gray-900">Dimension Limits</Label>
@@ -379,7 +379,7 @@ export function CompressionControls({
                   onChange={(e) => setMaxWidth(Number(e.target.value) || 0)}
                   placeholder="Auto"
                   disabled={disabled}
-                  className="h-12 sm:h-14 rounded-xl bg-white/80 backdrop-blur-sm border border-white/40 text-base text-gray-900 placeholder:text-gray-500 hover:bg-white/90 focus:bg-white/95 focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all duration-200"
+                  className="h-12 sm:h-14 rounded-xl bg-white/90 backdrop-blur-sm border border-gray-300 text-base text-gray-900 placeholder:text-gray-500 hover:bg-white/90 focus:bg-white/95 focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all duration-200"
                 />
               </div>
               <div className="space-y-2 sm:space-y-3">
@@ -390,7 +390,7 @@ export function CompressionControls({
                   onChange={(e) => setMaxHeight(Number(e.target.value) || 0)}
                   placeholder="Auto"
                   disabled={disabled}
-                  className="h-12 sm:h-14 rounded-xl bg-white/80 backdrop-blur-sm border border-white/40 text-base text-gray-900 placeholder:text-gray-500 hover:bg-white/90 focus:bg-white/95 focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all duration-200"
+                  className="h-12 sm:h-14 rounded-xl bg-white/90 backdrop-blur-sm border border-gray-300 text-base text-gray-900 placeholder:text-gray-500 hover:bg-white/90 focus:bg-white/95 focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all duration-200"
                 />
               </div>
             </div>
@@ -399,7 +399,7 @@ export function CompressionControls({
           <Button 
             onClick={handleTargetSizeCompress} 
             disabled={disabled} 
-            className="w-full h-12 rounded-xl bg-primary text-primary-foreground font-medium shadow-md hover:bg-primary/90 transition-all"
+            className="w-full h-12 rounded-xl bg-primary text-primary-foreground font-medium shadow-lg hover:bg-primary/90 hover:shadow-xl transition-all duration-300 border border-primary/20"
           >
             <Target className="w-4 h-4 mr-2" />
             Compress to Target Size

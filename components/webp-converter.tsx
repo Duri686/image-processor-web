@@ -76,7 +76,7 @@ export function WebPConverter({ onConvert, quality, onQualityChange, disabled = 
   }
 
   return (
-    <div className="bg-card/60 backdrop-blur-sm rounded-2xl p-8 shadow-lg border border-white/30 space-y-8">
+    <div className="bg-card/60 backdrop-blur-sm rounded-2xl p-8 border border-white/30 space-y-8">
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-3">
           <div className="p-2 rounded-xl bg-primary/10 border border-primary/20">

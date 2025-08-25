@@ -109,11 +109,11 @@ export function ImageUploader({ onFilesSelected, accept = "image/*", multiple = 
   return (
     <div
       className={cn(
-        "relative border-2 border-dashed rounded-xl transition-all duration-300 bg-white/60 backdrop-blur-sm shadow-lg",
+        "relative border-2 border-dashed rounded-2xl transition-all duration-300 bg-white shadow-lg shadow-gray-200/50",
         isDragOver 
-          ? "border-primary bg-primary/10 shadow-xl scale-[1.02]" 
-          : "border-gray-300 hover:border-primary/60 hover:bg-white/80 hover:shadow-xl",
-        isUploading && "border-green-400 bg-green-50/60",
+          ? "border-primary/30 bg-primary/10 shadow-xl shadow-primary/25 scale-[1.02]" 
+          : "border-gray-300 hover:border-primary/60 hover:bg-white hover:shadow-xl hover:shadow-gray-200/60",
+        isUploading && "border-green-400 bg-green-50/80 shadow-lg shadow-green-200/50",
         className,
       )}
       onDragOver={handleDragOver}
@@ -129,26 +129,28 @@ export function ImageUploader({ onFilesSelected, accept = "image/*", multiple = 
         className="absolute inset-0 w-full h-full opacity-0 cursor-pointer disabled:cursor-not-allowed"
       />
 
-      <div className="flex flex-col items-center justify-center p-12 text-center">
+      <div className="flex flex-col items-center justify-center p-12 md:p-16 text-center">
+        {/* 图标容器 - 符合UI规范的设计 */}
         <div className={cn(
-          "mb-6 p-4 rounded-xl transition-all duration-300",
+          "mb-8 p-6 rounded-2xl transition-all duration-300 shadow-md",
           isDragOver 
-            ? "bg-primary/20 border border-primary/30 scale-110" 
+            ? "bg-primary/20 border border-primary/30 scale-110 shadow-lg shadow-primary/20" 
             : isUploading 
-              ? "bg-green-100 border border-green-300"
-              : "bg-gray-100/60 border border-gray-200"
+              ? "bg-green-100 border border-green-300 shadow-lg shadow-green-200/50"
+              : "bg-gray-100/80 border border-gray-200 shadow-sm"
         )}>
           {isUploading ? (
-            <CheckCircle className="w-8 h-8 text-green-600 animate-pulse" />
+            <CheckCircle className="w-10 h-10 md:w-12 md:h-12 text-green-600 animate-pulse" />
           ) : isDragOver ? (
-            <Upload className="w-8 h-8 text-primary animate-bounce" />
+            <Upload className="w-10 h-10 md:w-12 md:h-12 text-primary animate-bounce" />
           ) : (
-            <ImageIcon className="w-8 h-8 text-gray-500" />
+            <ImageIcon className="w-10 h-10 md:w-12 md:h-12 text-gray-500" />
           )}
         </div>
 
-        <div className="space-y-2">
-          <h3 className="text-xl font-bold font-serif text-gray-900">
+        {/* 标题和描述区域 */}
+        <div className="space-y-3 mb-8">
+          <h3 className="text-2xl md:text-3xl font-bold font-serif text-gray-900">
             {isUploading 
               ? "Processing..." 
               : isDragOver 
@@ -157,7 +159,7 @@ export function ImageUploader({ onFilesSelected, accept = "image/*", multiple = 
             }
           </h3>
 
-          <p className="text-sm text-gray-600 max-w-sm">
+          <p className="text-base md:text-lg text-gray-600 max-w-md leading-relaxed">
             {isUploading 
               ? "Your images are being prepared for processing"
               : "Drag and drop your images here, or click to browse"
@@ -165,12 +167,13 @@ export function ImageUploader({ onFilesSelected, accept = "image/*", multiple = 
           </p>
         </div>
 
-        <div className="mt-6 p-3 bg-blue-50/60 rounded-lg border border-blue-200">
-          <div className="flex items-center gap-2 text-blue-700">
-            <div className="w-1.5 h-1.5 rounded-full bg-blue-500"></div>
-            <p className="text-xs font-medium">Supported formats</p>
+        {/* 支持格式信息卡片 - 符合信息提示设计规范 */}
+        <div className="p-4 bg-blue-50/80 rounded-xl border border-blue-200 shadow-sm">
+          <div className="flex items-center gap-2 text-blue-700 mb-2">
+            <div className="w-2 h-2 rounded-full bg-blue-500"></div>
+            <p className="text-sm font-semibold">Supported formats</p>
           </div>
-          <p className="text-xs text-blue-600 mt-1">JPEG, PNG, WebP • Max 10MB per file</p>
+          <p className="text-sm text-blue-600 font-medium">JPEG, PNG, WebP • Max 10MB per file</p>
         </div>
       </div>
     </div>

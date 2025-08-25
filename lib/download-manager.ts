@@ -138,8 +138,10 @@ export const downloadMultipleFiles = async (
  * Generate filename with pattern
  */
 export const generateFilename = (originalName: string, pattern: string, extension?: string): string => {
-  const nameWithoutExt = originalName.split(".").slice(0, -1).join(".")
-  const ext = extension || originalName.split(".").pop() || "png"
+  // 防止 originalName 为 undefined 或空值
+  const safeName = originalName || "image"
+  const nameWithoutExt = safeName.split(".").slice(0, -1).join(".") || safeName
+  const ext = extension || safeName.split(".").pop() || "png"
 
   return pattern
     .replace("{name}", nameWithoutExt)
@@ -152,7 +154,10 @@ export const generateFilename = (originalName: string, pattern: string, extensio
  * Calculate total size of export
  */
 export const calculateExportSize = (files: ExportItem[]): number => {
-  return files.reduce((total, file) => total + file.size, 0)
+  return files.reduce((total, file) => {
+    const size = typeof file.size === 'number' && !isNaN(file.size) ? file.size : 0
+    return total + size
+  }, 0)
 }
 
 /**
@@ -160,6 +165,6 @@ export const calculateExportSize = (files: ExportItem[]): number => {
  */
 export const formatExportSummary = (files: ExportItem[]): string => {
   const totalSize = calculateExportSize(files)
-  const sizeInMB = (totalSize / (1024 * 1024)).toFixed(2)
+  const sizeInMB = totalSize > 0 ? (totalSize / (1024 * 1024)).toFixed(2) : '0.00'
   return `${files.length} files • ${sizeInMB} MB total`
 }

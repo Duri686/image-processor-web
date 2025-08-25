@@ -4,7 +4,7 @@ import { ImageIcon } from "lucide-react"
 
 export function Header() {
   return (
-    <header className="sticky top-0 z-50 bg-white/60 backdrop-blur-sm border-b border-white/30 shadow-sm">
+    <header className="sticky top-0 z-50 bg-white/40 backdrop-blur-sm border-b border-white/30 shadow-lg">
       <div className="container mx-auto px-6 h-20 flex items-center">
         <div className="flex items-center gap-4">
           <div className="p-3 rounded-xl bg-primary/10 border border-primary/20 shadow-sm">

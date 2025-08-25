@@ -146,7 +146,7 @@ export function DownloadManager({ exportItems, disabled = false, onExportComplet
       ? generateFilename(
           exportItems[0].originalName || exportItems[0].filename,
           selectedPattern === "custom" ? customPattern : selectedPattern,
-          exportItems[0].type.split("/")[1],
+          exportItems[0].type?.split("/")[1] || "jpg",
         )
       : ""
 
@@ -197,7 +197,7 @@ export function DownloadManager({ exportItems, disabled = false, onExportComplet
               <div className="flex-1 min-w-0">
                 <p className="text-sm font-medium text-gray-900 truncate">{item.filename}</p>
                 <p className="text-xs text-gray-600 mt-1">
-                  {(item.size / 1024).toFixed(1)} KB • {item.type.split('/')[1].toUpperCase()}
+                  {typeof item.size === 'number' && !isNaN(item.size) ? (item.size / 1024).toFixed(1) : '0.0'} KB • {item.type?.split('/')[1]?.toUpperCase() || 'FILE'}
                 </p>
               </div>
               <div className="ml-3 px-2 py-1 bg-green-100 text-green-700 text-xs font-medium rounded-md">

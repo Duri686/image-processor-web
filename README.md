@@ -12,32 +12,6 @@
 
 ---
 
-## 🧱 Project Structure / 目录结构
-
-```text
-app/                    # App Router 页面与布局
-  layout.tsx            # 根布局
-  page.tsx              # 首页：集成图片上传、压缩/转换、生成器入口
-components/             # 组件
-  compression-controls.tsx
-  download-manager.tsx
-  favicon-generator.tsx
-  format-converter.tsx
-  image-preview.tsx
-  image-uploader.tsx
-  og-image-generator.tsx
-  webp-converter.tsx
-  ui/                   # 基于 shadcn/ui 的 UI 组件
-lib/                    # 业务逻辑与工具函数
-  image-processing.ts   # 核心图像处理逻辑（压缩、转换等）
-  download-manager.ts   # 下载与打包处理
-  utils.ts
-public/                 # 静态资源
-styles/                 # 全局样式（Tailwind 4）
-next.config.mjs         # Next.js 配置（忽略构建 ESLint/TS 错误、images.unoptimized）
-postcss.config.mjs      # 使用 @tailwindcss/postcss（Tailwind v4）
-```
-
 ## 📜 Scripts / 脚本说明（来自 `package.json`）
 
 ```jsonc

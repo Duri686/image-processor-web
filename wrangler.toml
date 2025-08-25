@@ -1,0 +1,4 @@
+# Cloudflare Pages Functions compatibility configuration
+# Enable Node.js compatibility layer required by @cloudflare/next-on-pages
+compatibility_date = "2025-08-25"
+compatibility_flags = ["nodejs_compat"]

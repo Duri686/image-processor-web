@@ -12,7 +12,7 @@ import { Alert, AlertDescription } from "@/components/ui/alert"
 import { downloadImage } from "@/lib/image-processing"
 import { Badge } from "@/components/ui/badge"
 import { worstContrastForBackgrounds, wcagLevelForText } from "@/lib/utils"
-import { Share2, Download, Palette, Type, Info } from "lucide-react"
+import { Share2, Download, Palette, Type, Info, Loader2 } from "lucide-react"
 
 interface OGImageGeneratorProps {
   disabled?: boolean
@@ -261,25 +261,33 @@ export function OGImageGenerator({ disabled = false }: OGImageGeneratorProps) {
   }, [title, subtitle, backgroundColor, textColor, selectedTemplate, fontSize, subtitleSize, useGradient, gradientValue, gradientStart, gradientEnd, gradientAngle, handleGenerate])
 
   return (
-    <Card className="p-6 space-y-6">
-      <div className="flex items-center gap-2">
-        <Share2 className="w-5 h-5 text-muted-foreground" />
-        <h2 className="text-lg font-semibold font-serif">OG Image Generator</h2>
+    <div className="bg-card/60 backdrop-blur-sm rounded-2xl p-8 shadow-lg border border-white/30 space-y-8">
+      <div className="flex items-center gap-3">
+        <div className="p-2 rounded-xl bg-primary/10 border border-primary/20">
+          <Share2 className="w-5 h-5 text-primary" />
+        </div>
+        <div>
+          <h2 className="text-xl font-bold font-serif text-foreground">OG Image Generator</h2>
+          <p className="text-sm text-muted-foreground">Create stunning social media preview images</p>
+        </div>
       </div>
 
       {/* Template Selection */}
-      <div className="space-y-3">
-        <Label className="text-sm font-medium">Template</Label>
+      <div className="bg-white/40 backdrop-blur-sm rounded-xl p-6 border border-white/30 space-y-4">
+        <div className="flex items-center gap-2">
+          <div className="w-2 h-2 rounded-full bg-primary"></div>
+          <h3 className="text-lg font-bold font-serif text-gray-900">Template</h3>
+        </div>
         <Select value={selectedTemplate} onValueChange={setSelectedTemplate}>
-          <SelectTrigger>
-            <SelectValue />
+          <SelectTrigger className="h-12 rounded-xl bg-white/80 border-gray-300 text-base font-medium text-gray-900 shadow-sm hover:bg-white/90">
+            <SelectValue className="text-gray-900" />
           </SelectTrigger>
-          <SelectContent>
+          <SelectContent className="rounded-xl border-gray-300 bg-white shadow-lg">
             {OG_TEMPLATES.map((template) => (
-              <SelectItem key={template.id} value={template.id}>
-                <div className="flex flex-col">
-                  <span className="font-medium">{template.name}</span>
-                  <span className="text-xs text-muted-foreground">{template.description}</span>
+              <SelectItem key={template.id} value={template.id} className="cursor-pointer hover:bg-gray-50">
+                <div className="flex flex-col py-1">
+                  <span className="font-medium text-gray-900">{template.name}</span>
+                  <span className="text-xs text-gray-600">{template.description}</span>
                 </div>
               </SelectItem>
             ))}
@@ -288,39 +296,50 @@ export function OGImageGenerator({ disabled = false }: OGImageGeneratorProps) {
       </div>
 
       {/* Content */}
-      <div className="space-y-4">
-        <div className="space-y-2">
-          <Label className="text-sm font-medium">Title</Label>
-          <Input
-            value={title}
-            onChange={(e) => setTitle(e.target.value)}
-            placeholder="Enter your title"
-            disabled={disabled || isGenerating}
-          />
+      <div className="bg-white/40 backdrop-blur-sm rounded-xl p-6 border border-white/30 space-y-4">
+        <div className="flex items-center gap-2">
+          <div className="w-2 h-2 rounded-full bg-primary"></div>
+          <h3 className="text-lg font-bold font-serif text-gray-900">Content</h3>
         </div>
+        <div className="space-y-4">
+          <div className="space-y-3">
+            <Label className="text-base font-semibold text-gray-900">Title</Label>
+            <Input
+              value={title}
+              onChange={(e) => setTitle(e.target.value)}
+              placeholder="Enter your title"
+              disabled={disabled || isGenerating}
+              className="h-12 rounded-xl bg-white/90 border-gray-300 text-base text-gray-900 placeholder:text-gray-500 shadow-sm focus:bg-white focus:border-primary focus:ring-2 focus:ring-primary/20"
+            />
+          </div>
 
-        <div className="space-y-2">
-          <Label className="text-sm font-medium">Subtitle</Label>
-          <Textarea
-            value={subtitle}
-            onChange={(e) => setSubtitle(e.target.value)}
-            placeholder="Enter your subtitle"
-            rows={2}
-            disabled={disabled || isGenerating}
-          />
+          <div className="space-y-3">
+            <Label className="text-base font-semibold text-gray-900">Subtitle</Label>
+            <Textarea
+              value={subtitle}
+              onChange={(e) => setSubtitle(e.target.value)}
+              placeholder="Enter your subtitle"
+              rows={3}
+              disabled={disabled || isGenerating}
+              className="rounded-xl bg-white/90 border-gray-300 text-base text-gray-900 placeholder:text-gray-500 resize-none shadow-sm focus:bg-white focus:border-primary focus:ring-2 focus:ring-primary/20"
+            />
+          </div>
         </div>
       </div>
 
       {/* Typography Controls */}
-      <div className="space-y-4">
+      <div className="bg-white/40 backdrop-blur-sm rounded-xl p-6 border border-white/30 space-y-4">
         <div className="flex items-center gap-2">
-          <Type className="w-4 h-4 text-muted-foreground" />
-          <Label className="text-sm font-medium">Typography</Label>
+          <div className="w-2 h-2 rounded-full bg-primary"></div>
+          <h3 className="text-lg font-bold font-serif text-gray-900">Typography</h3>
         </div>
 
-        <div className="grid grid-cols-2 gap-4">
-          <div className="space-y-2">
-            <Label className="text-xs">Title Size: {fontSize}px</Label>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div className="space-y-4">
+            <div className="flex items-center justify-between">
+              <Label className="text-sm font-semibold text-gray-900">Title Size</Label>
+              <div className="px-2 py-1 bg-gray-100 rounded-md text-xs font-mono text-gray-700">{fontSize}px</div>
+            </div>
             <Slider
               value={[fontSize]}
               onValueChange={(value) => setFontSize(value[0])}
@@ -328,11 +347,20 @@ export function OGImageGenerator({ disabled = false }: OGImageGeneratorProps) {
               max={120}
               step={4}
               disabled={disabled || isGenerating}
+              className="w-full"
             />
+            <div className="flex justify-between text-xs text-gray-500">
+              <span>40px</span>
+              <span className="font-medium">Medium</span>
+              <span>120px</span>
+            </div>
           </div>
 
-          <div className="space-y-2">
-            <Label className="text-xs">Subtitle Size: {subtitleSize}px</Label>
+          <div className="space-y-4">
+            <div className="flex items-center justify-between">
+              <Label className="text-sm font-semibold text-gray-900">Subtitle Size</Label>
+              <div className="px-2 py-1 bg-gray-100 rounded-md text-xs font-mono text-gray-700">{subtitleSize}px</div>
+            </div>
             <Slider
               value={[subtitleSize]}
               onValueChange={(value) => setSubtitleSize(value[0])}
@@ -340,7 +368,13 @@ export function OGImageGenerator({ disabled = false }: OGImageGeneratorProps) {
               max={60}
               step={2}
               disabled={disabled || isGenerating}
+              className="w-full"
             />
+            <div className="flex justify-between text-xs text-gray-500">
+              <span>20px</span>
+              <span className="font-medium">Small</span>
+              <span>60px</span>
+            </div>
           </div>
         </div>
 
@@ -351,48 +385,50 @@ export function OGImageGenerator({ disabled = false }: OGImageGeneratorProps) {
             </div>
 
             {/* Gradient color pickers */}
-            <div className="grid grid-cols-2 gap-4">
-              <div className="space-y-2">
-                <Label className="text-xs">Start</Label>
-                <div className="flex items-center gap-2">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div className="space-y-3">
+                <Label className="text-sm font-semibold text-gray-900">Start Color</Label>
+                <div className="flex items-center gap-3">
                   <Input
                     type="color"
                     value={gradientStart}
                     onChange={(e: ChangeEvent<HTMLInputElement>) => { setGradientStart(e.target.value); setUseGradient(true) }}
-                    className="w-12 h-8 p-1 border rounded"
+                    className="w-12 h-10 p-1 rounded-lg bg-white/90 border-gray-300 shadow-sm cursor-pointer hover:bg-white focus:ring-2 focus:ring-primary/20"
                     disabled={disabled || isGenerating}
                   />
                   <Input
                     value={gradientStart}
                     onChange={(e: ChangeEvent<HTMLInputElement>) => { setGradientStart(e.target.value); setUseGradient(true) }}
-                    className="flex-1 text-xs"
+                    className="flex-1 h-10 rounded-lg bg-white/90 border-gray-300 text-sm text-gray-900 placeholder:text-gray-500 shadow-sm focus:bg-white focus:border-primary focus:ring-2 focus:ring-primary/20"
                     disabled={disabled || isGenerating}
+                    placeholder="#000000"
                   />
                 </div>
               </div>
-              <div className="space-y-2">
-                <Label className="text-xs">End</Label>
-                <div className="flex items-center gap-2">
+              <div className="space-y-3">
+                <Label className="text-sm font-semibold text-gray-900">End Color</Label>
+                <div className="flex items-center gap-3">
                   <Input
                     type="color"
                     value={gradientEnd}
                     onChange={(e: ChangeEvent<HTMLInputElement>) => { setGradientEnd(e.target.value); setUseGradient(true) }}
-                    className="w-12 h-8 p-1 border rounded"
+                    className="w-12 h-10 p-1 rounded-lg bg-white/90 border-gray-300 shadow-sm cursor-pointer hover:bg-white focus:ring-2 focus:ring-primary/20"
                     disabled={disabled || isGenerating}
                   />
                   <Input
                     value={gradientEnd}
                     onChange={(e: ChangeEvent<HTMLInputElement>) => { setGradientEnd(e.target.value); setUseGradient(true) }}
-                    className="flex-1 text-xs"
+                    className="flex-1 h-10 rounded-lg bg-white/90 border-gray-300 text-sm text-gray-900 placeholder:text-gray-500 shadow-sm focus:bg-white focus:border-primary focus:ring-2 focus:ring-primary/20"
                     disabled={disabled || isGenerating}
+                    placeholder="#ffffff"
                   />
                 </div>
               </div>
             </div>
 
             {/* Gradient angle */}
-            <div className="space-y-2">
-              <Label className="text-xs">Angle: {gradientAngle}°</Label>
+            <div className="space-y-3">
+              <Label className="text-sm font-semibold text-gray-900">Angle: {gradientAngle}°</Label>
               <Slider
                 value={[gradientAngle]}
                 onValueChange={(v: number[]) => { setGradientAngle(v[0]); setUseGradient(true) }}
@@ -400,78 +436,105 @@ export function OGImageGenerator({ disabled = false }: OGImageGeneratorProps) {
                 max={360}
                 step={1}
                 disabled={disabled || isGenerating}
+                className="w-full"
               />
             </div>
 
             {/* Quick presets */}
-            <div className="grid grid-cols-3 gap-2">
-              {GRADIENT_PRESETS.map((p) => (
-                <Button
-                  key={p.name}
-                  variant="outline"
-                  size="sm"
-                  className="h-8 text-[11px] bg-transparent"
-                  onClick={() => {
-                    setUseGradient(true)
-                    setGradientValue(p.value)
-                    // try to parse two colors for start/end for consistency
-                    const m = p.value.match(/(#[0-9a-fA-F]{3,8}|rgba?\([^\)]+\))/g) || []
-                    if (m[0]) setGradientStart(m[0])
-                    if (m[1]) setGradientEnd(m[1])
-                  }}
-                  style={{ background: p.value, color: "#fff" }}
-                >
-                  {p.name}
-                </Button>
-              ))}
+            <div className="space-y-2">
+              <Label className="text-sm font-semibold text-gray-900">Quick Presets</Label>
+              <div className="grid grid-cols-2 md:grid-cols-3 gap-2">
+                {GRADIENT_PRESETS.map((p) => (
+                  <Button
+                    key={p.name}
+                    variant="outline"
+                    size="sm"
+                    className="h-10 text-xs rounded-lg border-white/40 text-white font-medium"
+                    onClick={() => {
+                      setUseGradient(true)
+                      setGradientValue(p.value)
+                      // try to parse two colors for start/end for consistency
+                      const m = p.value.match(/(#[0-9a-fA-F]{3,8}|rgba?\([^\)]+\))/g) || []
+                      if (m[0]) setGradientStart(m[0])
+                      if (m[1]) setGradientEnd(m[1])
+                    }}
+                    style={{ background: p.value, color: "#fff" }}
+                  >
+                    {p.name}
+                  </Button>
+                ))}
+              </div>
             </div>
           </div>
         )}
       </div>
 
       {/* Color Controls */}
-      <div className="space-y-4">
+      <div className="bg-white/40 backdrop-blur-sm rounded-xl p-6 border border-white/30 space-y-4">
         <div className="flex items-center gap-2">
-          <Palette className="w-4 h-4 text-muted-foreground" />
-          <Label className="text-sm font-medium">Colors</Label>
+          <div className="w-2 h-2 rounded-full bg-primary"></div>
+          <h3 className="text-lg font-bold font-serif text-gray-900">Colors</h3>
         </div>
 
         {/* Solid color tools are hidden when gradient mode is on */}
         {!useGradient && (
           <>
             {/* Color Presets (Solid) */}
-            <div className="grid grid-cols-4 gap-2">
-              {BACKGROUND_PRESETS.map((preset) => (
-                <Button
-                  key={preset.name}
-                  variant="outline"
-                  size="sm"
-                  onClick={() => handlePresetSelect(preset)}
-                  className="h-8 text-xs bg-transparent"
-                  style={{ backgroundColor: preset.value, color: preset.textColor }}
-                >
-                  {preset.name}
-                </Button>
-              ))}
+            <div className="space-y-2">
+              <Label className="text-sm font-semibold text-gray-900">Color Presets</Label>
+              <div className="grid grid-cols-2 md:grid-cols-4 gap-2">
+                {BACKGROUND_PRESETS.map((preset) => (
+                  <Button
+                    key={preset.name}
+                    variant="outline"
+                    size="sm"
+                    onClick={() => handlePresetSelect(preset)}
+                    className="h-10 text-xs rounded-lg border-white/40 font-medium"
+                    style={{ backgroundColor: preset.value, color: preset.textColor }}
+                  >
+                    {preset.name}
+                  </Button>
+                ))}
+              </div>
             </div>
 
             {/* Background (Solid) */}
-            <div className="grid grid-cols-2 gap-4">
-              <div className="space-y-2">
-                <Label className="text-xs">Background</Label>
-                <div className="flex items-center gap-2">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div className="space-y-3">
+                <Label className="text-sm font-semibold text-gray-900">Background Color</Label>
+                <div className="flex items-center gap-3">
                   <Input
                     type="color"
                     value={backgroundColor}
                     onChange={(e: ChangeEvent<HTMLInputElement>) => setBackgroundColor(e.target.value)}
-                    className="w-12 h-8 p-1 border rounded"
+                    className="w-12 h-10 p-1 rounded-lg bg-white/90 border-gray-300 shadow-sm cursor-pointer hover:bg-white focus:ring-2 focus:ring-primary/20"
                     disabled={disabled || isGenerating}
                   />
                   <Input
                     value={backgroundColor}
                     onChange={(e: ChangeEvent<HTMLInputElement>) => setBackgroundColor(e.target.value)}
-                    className="flex-1 text-xs"
+                    className="flex-1 h-10 rounded-lg bg-white/90 border-gray-300 text-sm text-gray-900 placeholder:text-gray-500 shadow-sm focus:bg-white focus:border-primary focus:ring-2 focus:ring-primary/20"
                     disabled={disabled || isGenerating}
+                    placeholder="#ffffff"
+                  />
+                </div>
+              </div>
+              <div className="space-y-3">
+                <Label className="text-sm font-semibold text-gray-900">Text Color</Label>
+                <div className="flex items-center gap-3">
+                  <Input
+                    type="color"
+                    value={textColor}
+                    onChange={(e: ChangeEvent<HTMLInputElement>) => setTextColor(e.target.value)}
+                    className="w-12 h-10 p-1 rounded-lg bg-white/90 border-gray-300 shadow-sm cursor-pointer hover:bg-white focus:ring-2 focus:ring-primary/20"
+                    disabled={disabled || isGenerating}
+                  />
+                  <Input
+                    value={textColor}
+                    onChange={(e: ChangeEvent<HTMLInputElement>) => setTextColor(e.target.value)}
+                    className="flex-1 h-10 rounded-lg bg-white/90 border-gray-300 text-sm text-gray-900 placeholder:text-gray-500 shadow-sm focus:bg-white focus:border-primary focus:ring-2 focus:ring-primary/20"
+                    disabled={disabled || isGenerating}
+                    placeholder="#000000"
                   />
                 </div>
               </div>
@@ -479,45 +542,77 @@ export function OGImageGenerator({ disabled = false }: OGImageGeneratorProps) {
           </>
         )}
 
-        {/* Text Color is always available */}
-        <div className="grid grid-cols-2 gap-4">
-          <div className="space-y-2">
-            <Label className="text-xs">Text Color</Label>
-            <div className="flex items-center gap-2">
-              <Input
-                type="color"
-                value={textColor}
-                onChange={(e: ChangeEvent<HTMLInputElement>) => setTextColor(e.target.value)}
-                className="w-12 h-8 p-1 border rounded"
-                disabled={disabled || isGenerating}
-              />
-              <Input
-                value={textColor}
-                onChange={(e: ChangeEvent<HTMLInputElement>) => setTextColor(e.target.value)}
-                className="flex-1 text-xs"
-                disabled={disabled || isGenerating}
-              />
+        {/* Gradient Toggle */}
+        <div className="flex items-center justify-between p-4 bg-white/60 rounded-xl border border-gray-200 shadow-sm">
+          <div className="flex items-center gap-3">
+            <div className="w-3 h-3 rounded-full bg-gradient-to-r from-blue-500 to-purple-500"></div>
+            <div>
+              <Label className="text-sm font-semibold text-gray-900">Gradient Background</Label>
+              <p className="text-xs text-gray-600 mt-0.5">Enable gradient instead of solid color</p>
             </div>
           </div>
+          <Button
+            variant={useGradient ? "default" : "outline"}
+            size="sm"
+            onClick={() => setUseGradient(!useGradient)}
+            className={`h-9 px-4 text-sm rounded-lg font-medium transition-all ${
+              useGradient 
+                ? "bg-primary text-primary-foreground shadow-md hover:bg-primary/90" 
+                : "bg-white border-gray-300 text-gray-700 hover:bg-gray-50 hover:border-gray-400"
+            }`}
+          >
+            {useGradient ? "✓ Enabled" : "Enable"}
+          </Button>
         </div>
       </div>
 
-      {/* Preview */}
-      {generatedImage && (
-        <div className="space-y-3">
-          <div className="flex items-center justify-between">
-            <Label className="text-sm font-medium">Preview (1200×630)</Label>
-            <Button variant="outline" size="sm" onClick={handleDownload} className="bg-transparent">
-              <Download className="w-3 h-3 mr-1" />
-              Download
-            </Button>
-          </div>
+      {/* Preview & Generate */}
+      <div className="bg-white/40 backdrop-blur-sm rounded-xl p-6 border border-white/30 space-y-4">
+        <div className="flex items-center gap-2">
+          <div className="w-2 h-2 rounded-full bg-primary"></div>
+          <h3 className="text-lg font-bold font-serif text-gray-900">Preview & Generate</h3>
+        </div>
+        
+        {/* Generate Button */}
+        <Button
+          onClick={handleGenerate}
+          disabled={disabled || isGenerating || !title.trim()}
+          className="w-full h-12 text-base font-semibold rounded-xl bg-primary hover:bg-primary/90 text-primary-foreground shadow-lg"
+        >
+          {isGenerating ? (
+            <>
+              <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+              Generating...
+            </>
+          ) : (
+            <>
+              <Share2 className="w-4 h-4 mr-2" />
+              Generate OG Image
+            </>
+          )}
+        </Button>
 
-          <div className="border rounded-lg overflow-hidden bg-muted">
-            <img
-              src={generatedImage.dataUrl || "/placeholder.svg"}
-              alt="Generated OG Image"
-              className="w-full h-auto"
+        {/* Preview */}
+        {generatedImage && (
+          <div className="space-y-4">
+            <div className="flex items-center justify-between">
+              <Label className="text-base font-semibold text-gray-900">Preview (1200×630)</Label>
+              <Button 
+                variant="outline" 
+                size="sm" 
+                onClick={handleDownload} 
+                className="h-10 px-4 rounded-lg bg-white/90 border-gray-300 text-gray-700 font-medium shadow-sm hover:bg-white hover:border-gray-400 hover:shadow-md transition-all focus:ring-2 focus:ring-primary/20"
+              >
+                <Download className="w-4 h-4 mr-2" />
+                Download PNG
+              </Button>
+            </div>
+
+            <div className="rounded-xl overflow-hidden bg-white/20 border border-white/30 shadow-lg">
+              <img
+                src={generatedImage.dataUrl || "/placeholder.svg"}
+                alt="Generated OG Image"
+                className="w-full h-auto"
               style={{ aspectRatio: "1200/630" }}
             />
           </div>
@@ -535,17 +630,17 @@ export function OGImageGenerator({ disabled = false }: OGImageGeneratorProps) {
                 <>
                   <Badge
                     variant="outline"
-                    className={`px-2 py-0.5 text-[11px] ${t.badgeClass}`}
+                    className={`px-3 py-1 text-xs rounded-lg bg-white/50 border-white/40 ${t.badgeClass}`}
                     title={t.tooltip}
                   >
-                    Title readability: {t.friendly.replace('Readability: ', '')}
+                    Title: {t.friendly.replace('Readability: ', '')}
                   </Badge>
                   <Badge
                     variant="outline"
-                    className={`px-2 py-0.5 text-[11px] ${s.badgeClass}`}
+                    className={`px-3 py-1 text-xs rounded-lg bg-white/50 border-white/40 ${s.badgeClass}`}
                     title={s.tooltip}
                   >
-                    Subtitle readability: {s.friendly.replace('Readability: ', '')}
+                    Subtitle: {s.friendly.replace('Readability: ', '')}
                   </Badge>
                 </>
               )
@@ -553,35 +648,45 @@ export function OGImageGenerator({ disabled = false }: OGImageGeneratorProps) {
           </div>
         </div>
       )}
-
-      {/* Generate Button */}
-      <Button onClick={handleGenerate} disabled={disabled || isGenerating} className="w-full" size="lg">
-        <Share2 className="w-4 h-4 mr-2" />
-        {isGenerating ? "Generating..." : "Generate OG Image"}
-      </Button>
+      </div>
 
       {/* Usage Tips */}
-      <Alert>
-        <Info className="h-4 w-4 text-muted-foreground" />
-        <AlertDescription>
-          <div className="space-y-2">
-            <p className="font-medium text-foreground">OG Image Best Practices</p>
-            <ul className="text-sm space-y-1 text-muted-foreground">
-              <li>• Use high contrast between text and background</li>
-              <li>• Keep text large and readable (minimum 40px)</li>
-              <li>• Optimal size is 1200×630 pixels (1.91:1 ratio)</li>
-              <li>• Test how it looks when shared on social platforms</li>
-            </ul>
+      <div className="bg-blue-50/60 backdrop-blur-sm rounded-xl p-6 border border-blue-200/40 space-y-3">
+        <div className="flex items-center gap-2">
+          <div className="p-1.5 rounded-lg bg-blue-100/60">
+            <Info className="h-4 w-4 text-blue-600" />
           </div>
-        </AlertDescription>
-      </Alert>
+          <h4 className="font-semibold text-blue-900">OG Image Best Practices</h4>
+        </div>
+        <ul className="text-sm space-y-2 text-blue-800/80 ml-7">
+          <li className="flex items-start gap-2">
+            <span className="w-1 h-1 rounded-full bg-blue-400 mt-2 flex-shrink-0"></span>
+            Use high contrast between text and background
+          </li>
+          <li className="flex items-start gap-2">
+            <span className="w-1 h-1 rounded-full bg-blue-400 mt-2 flex-shrink-0"></span>
+            Keep text large and readable (minimum 40px)
+          </li>
+          <li className="flex items-start gap-2">
+            <span className="w-1 h-1 rounded-full bg-blue-400 mt-2 flex-shrink-0"></span>
+            Optimal size is 1200×630 pixels (1.91:1 ratio)
+          </li>
+          <li className="flex items-start gap-2">
+            <span className="w-1 h-1 rounded-full bg-blue-400 mt-2 flex-shrink-0"></span>
+            Test how it looks when shared on social platforms
+          </li>
+        </ul>
+      </div>
 
       {/* HTML Meta Tags */}
       {generatedImage && (
-        <div className="space-y-2">
-          <Label className="text-sm font-medium">HTML Meta Tags</Label>
-          <div className="p-3 rounded-lg border bg-muted/60">
-            <code className="text-xs text-muted-foreground">
+        <div className="bg-white/40 backdrop-blur-sm rounded-xl p-6 border border-white/30 space-y-4">
+          <div className="flex items-center gap-2">
+            <div className="w-2 h-2 rounded-full bg-primary"></div>
+            <h3 className="text-lg font-bold font-serif text-gray-900">HTML Meta Tags</h3>
+          </div>
+          <div className="p-4 rounded-xl bg-gray-900/80 border border-gray-700/50">
+            <code className="text-sm text-green-400 font-mono leading-relaxed whitespace-pre-wrap">
               {`<meta property="og:image" content="/og-image.png" />
 <meta property="og:image:width" content="1200" />
 <meta property="og:image:height" content="630" />
@@ -591,6 +696,6 @@ export function OGImageGenerator({ disabled = false }: OGImageGeneratorProps) {
           </div>
         </div>
       )}
-    </Card>
+    </div>
   )
 }

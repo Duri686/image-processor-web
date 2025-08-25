@@ -32,9 +32,40 @@ export function DownloadManager({ exportItems, disabled = false, onExportComplet
   const [customPattern, setCustomPattern] = useState("")
   const [includeOriginals, setIncludeOriginals] = useState(false)
   const [isExporting, setIsExporting] = useState(false)
+  const [customPatternError, setCustomPatternError] = useState("")
+
+  // Validate custom pattern
+  const validateCustomPattern = useCallback((pattern: string) => {
+    if (!pattern.trim()) {
+      return "Custom pattern cannot be empty"
+    }
+    if (!pattern.includes("{name}") && !pattern.includes("{ext}")) {
+      return "Pattern must include at least {name} or {ext}"
+    }
+    if (!pattern.includes("{ext}")) {
+      return "Pattern must include {ext} for file extension"
+    }
+    // Check for invalid characters
+    const invalidChars = /[<>:"/\\|?*]/
+    if (invalidChars.test(pattern.replace(/\{[^}]+\}/g, ""))) {
+      return "Pattern contains invalid filename characters"
+    }
+    return ""
+  }, [])
 
   const handleExport = useCallback(async () => {
     if (exportItems.length === 0) return
+
+    // Validate custom pattern if selected
+    if (selectedPattern === "custom") {
+      const error = validateCustomPattern(customPattern)
+      if (error) {
+        setCustomPatternError(error)
+        toast.error("Invalid naming pattern", { description: error })
+        return
+      }
+      setCustomPatternError("")
+    }
 
     setIsExporting(true)
     // Use toast to show progress
@@ -82,7 +113,7 @@ export function DownloadManager({ exportItems, disabled = false, onExportComplet
     } finally {
       setIsExporting(false)
     }
-  }, [exportItems, selectedPattern, customPattern, onExportComplete])
+  }, [exportItems, selectedPattern, customPattern, onExportComplete, validateCustomPattern])
 
   const handleDownloadAll = useCallback(() => {
     exportItems.forEach((item, index) => {
@@ -99,8 +130,19 @@ export function DownloadManager({ exportItems, disabled = false, onExportComplet
     })
   }, [exportItems])
 
+  // Handle custom pattern changes
+  const handleCustomPatternChange = useCallback((value: string) => {
+    setCustomPattern(value)
+    if (value.trim()) {
+      const error = validateCustomPattern(value)
+      setCustomPatternError(error)
+    } else {
+      setCustomPatternError("Custom pattern cannot be empty")
+    }
+  }, [validateCustomPattern])
+
   const previewFilename =
-    exportItems.length > 0
+    exportItems.length > 0 && (selectedPattern !== "custom" || (customPattern.trim() && !customPatternError))
       ? generateFilename(
           exportItems[0].originalName || exportItems[0].filename,
           selectedPattern === "custom" ? customPattern : selectedPattern,
@@ -108,40 +150,58 @@ export function DownloadManager({ exportItems, disabled = false, onExportComplet
         )
       : ""
 
+  // Check if export should be disabled
+  const isExportDisabled = disabled || isExporting || exportItems.length === 0 || 
+    (selectedPattern === "custom" && (!customPattern.trim() || customPatternError))
+
   if (exportItems.length === 0) {
     return (
-      <Card className="p-6">
-        <div className="text-center text-muted-foreground">
-          <Package className="w-8 h-8 mx-auto mb-2 opacity-50" />
-          <p>No processed images to export</p>
+      <Card className="p-8 bg-white/40 backdrop-blur-sm border-white/30">
+        <div className="text-center">
+          <div className="p-4 rounded-xl bg-gray-100/60 w-fit mx-auto mb-4">
+            <Package className="w-8 h-8 text-gray-400" />
+          </div>
+          <h3 className="text-lg font-semibold text-gray-900 mb-2">No images to export</h3>
+          <p className="text-sm text-gray-600">After processing images, you can batch download or export them here</p>
         </div>
       </Card>
     )
   }
 
   return (
-    <Card className="p-6 space-y-6">
+    <Card className="p-6 space-y-6 bg-white/40 backdrop-blur-sm border-white/30">
       <div className="flex items-center justify-between">
-        <div className="flex items-center gap-2">
-          <Download className="w-5 h-5 text-muted-foreground" />
-          <h2 className="text-lg font-semibold font-serif">Export Manager</h2>
+        <div className="flex items-center gap-3">
+          <div className="p-2 rounded-xl bg-primary/10 border border-primary/20">
+            <Download className="w-5 h-5 text-primary" />
+          </div>
+          <div>
+            <h2 className="text-xl font-bold font-serif text-gray-900">Export Manager</h2>
+            <p className="text-sm text-gray-600">Batch download and package your processed results</p>
+          </div>
         </div>
-        <Badge variant="outline" className="px-2 py-0.5 text-[12px]">
+        <Badge variant="outline" className="px-3 py-1.5 text-sm font-medium bg-white/60 border-gray-200 text-gray-700">
           {formatExportSummary(exportItems)}
         </Badge>
       </div>
 
       {/* Export Items List */}
-      <div className="space-y-3">
-        <Label className="text-sm font-medium">Files to Export ({exportItems.length})</Label>
-        <div className="max-h-32 overflow-y-auto space-y-2">
+      <div className="space-y-4">
+        <div className="flex items-center gap-2">
+          <div className="w-2 h-2 rounded-full bg-primary"></div>
+          <Label className="text-base font-semibold text-gray-900">Files to Export ({exportItems.length})</Label>
+        </div>
+        <div className="max-h-40 overflow-y-auto space-y-2 p-3 bg-white/60 rounded-xl border border-gray-200">
           {exportItems.map((item, index) => (
-            <div key={index} className="flex items-center justify-between p-2 bg-muted rounded-lg">
+            <div key={index} className="flex items-center justify-between p-3 bg-white/80 rounded-lg border border-gray-100 hover:bg-white hover:border-gray-200 transition-all">
               <div className="flex-1 min-w-0">
-                <p className="text-sm font-medium truncate">{item.filename}</p>
-                <p className="text-xs text-muted-foreground">
-                  {(item.size / 1024).toFixed(1)} KB • {item.type}
+                <p className="text-sm font-medium text-gray-900 truncate">{item.filename}</p>
+                <p className="text-xs text-gray-600 mt-1">
+                  {(item.size / 1024).toFixed(1)} KB • {item.type.split('/')[1].toUpperCase()}
                 </p>
+              </div>
+              <div className="ml-3 px-2 py-1 bg-green-100 text-green-700 text-xs font-medium rounded-md">
+                Processed
               </div>
             </div>
           ))}
@@ -149,95 +209,143 @@ export function DownloadManager({ exportItems, disabled = false, onExportComplet
       </div>
 
       {/* Naming Pattern */}
-      <div className="space-y-3">
-        <Label className="text-sm font-medium">File Naming Pattern</Label>
+      <div className="space-y-4">
+        <div className="flex items-center gap-2">
+          <div className="w-2 h-2 rounded-full bg-primary"></div>
+          <Label className="text-base font-semibold text-gray-900">File Naming Pattern</Label>
+        </div>
         <Select value={selectedPattern} onValueChange={setSelectedPattern}>
-          <SelectTrigger>
-            <SelectValue />
+          <SelectTrigger className="h-12 rounded-xl bg-white/90 border-gray-300 text-base font-medium text-gray-900 shadow-sm hover:bg-white focus:border-primary focus:ring-2 focus:ring-primary/20">
+            <SelectValue className="text-gray-900" />
           </SelectTrigger>
-          <SelectContent>
+          <SelectContent className="rounded-xl border-gray-300 bg-white shadow-lg">
             {NAMING_PATTERNS.map((pattern) => (
-              <SelectItem key={pattern.value} value={pattern.value}>
-                {pattern.label}
+              <SelectItem key={pattern.value} value={pattern.value} className="cursor-pointer hover:bg-gray-50">
+                <div className="py-1">
+                  <span className="font-medium text-gray-900">{pattern.label}</span>
+                </div>
               </SelectItem>
             ))}
           </SelectContent>
         </Select>
 
         {selectedPattern === "custom" && (
-          <div className="space-y-2">
+          <div className="space-y-3 p-4 bg-blue-50/60 rounded-xl border border-blue-200">
+            <Label className="text-sm font-semibold text-gray-900">Custom Naming Pattern</Label>
             <Input
               value={customPattern}
-              onChange={(e) => setCustomPattern(e.target.value)}
+              onChange={(e) => handleCustomPatternChange(e.target.value)}
               placeholder="e.g., {name}_compressed.{ext}"
               disabled={disabled || isExporting}
+              className={`h-10 rounded-lg text-sm text-gray-900 placeholder:text-gray-500 shadow-sm focus:bg-white focus:ring-2 transition-all ${
+                customPatternError 
+                  ? "bg-red-50 border-red-300 focus:border-red-500 focus:ring-red-200" 
+                  : "bg-white/90 border-gray-300 focus:border-primary focus:ring-primary/20"
+              }`}
             />
-            <p className="text-xs text-muted-foreground">
-              Use {"{name}"} for original name, {"{ext}"} for extension, {"{timestamp}"} for timestamp, {"{date}"} for
-              date
-            </p>
+            {customPatternError && (
+              <div className="flex items-start gap-2 p-2 bg-red-50 rounded-lg border border-red-200">
+                <div className="w-4 h-4 rounded-full bg-red-100 flex items-center justify-center mt-0.5 flex-shrink-0">
+                  <span className="text-red-600 text-xs font-bold">!</span>
+                </div>
+                <p className="text-xs text-red-700 font-medium">{customPatternError}</p>
+              </div>
+            )}
+            <div className="p-3 bg-white/80 rounded-lg border border-gray-200">
+              <p className="text-xs font-medium text-gray-700 mb-2">Available variables:</p>
+              <div className="grid grid-cols-2 gap-2 text-xs text-gray-600">
+                <div><code className="bg-gray-100 px-1 rounded">{"{"}name{"}"}</code> Original filename</div>
+                <div><code className="bg-gray-100 px-1 rounded">{"{"}ext{"}"}</code> File extension</div>
+                <div><code className="bg-gray-100 px-1 rounded">{"{"}timestamp{"}"}</code> Timestamp</div>
+                <div><code className="bg-gray-100 px-1 rounded">{"{"}date{"}"}</code> Date</div>
+              </div>
+            </div>
           </div>
         )}
 
-        {previewFilename && (
-          <div className="p-2 rounded-lg border bg-muted/60">
-            <p className="text-xs text-muted-foreground">Preview</p>
-            <p className="text-sm font-mono">{previewFilename}</p>
+        {selectedPattern === "custom" && customPattern.trim() && !customPatternError && previewFilename && (
+          <div className="p-3 rounded-xl border bg-green-50/80 border-green-200">
+            <p className="text-xs font-medium text-green-700 mb-1">✓ Filename Preview</p>
+            <p className="text-sm font-mono text-gray-900 bg-white px-2 py-1 rounded border">{previewFilename}</p>
+          </div>
+        )}
+        {selectedPattern !== "custom" && previewFilename && (
+          <div className="p-3 rounded-xl border bg-gray-50/80 border-gray-200">
+            <p className="text-xs font-medium text-gray-700 mb-1">Filename Preview</p>
+            <p className="text-sm font-mono text-gray-900 bg-white px-2 py-1 rounded border">{previewFilename}</p>
           </div>
         )}
       </div>
 
       {/* Export Options */}
-      <div className="space-y-3">
-        <Label className="text-sm font-medium">Export Options</Label>
+      <div className="space-y-4">
+        <div className="flex items-center gap-2">
+          <div className="w-2 h-2 rounded-full bg-primary"></div>
+          <Label className="text-base font-semibold text-gray-900">Export Options</Label>
+        </div>
 
-        <div className="flex items-center space-x-2">
-          <Checkbox
-            id="include-originals"
-            checked={includeOriginals}
-            onCheckedChange={(checked) => setIncludeOriginals(checked as boolean)}
-            disabled={disabled || isExporting}
-          />
-          <Label htmlFor="include-originals" className="text-sm cursor-pointer">
-            Include original files
-          </Label>
+        <div className="p-4 bg-white/60 rounded-xl border border-gray-200">
+          <div className="flex items-center space-x-3">
+            <Checkbox
+              id="include-originals"
+              checked={includeOriginals}
+              onCheckedChange={(checked) => setIncludeOriginals(checked as boolean)}
+              disabled={disabled || isExporting}
+              className="w-5 h-5"
+            />
+            <div className="flex-1">
+              <Label htmlFor="include-originals" className="text-sm font-medium text-gray-900 cursor-pointer">
+                Include original files
+              </Label>
+              <p className="text-xs text-gray-600 mt-0.5">Include unprocessed original image files in the export package</p>
+            </div>
+          </div>
         </div>
       </div>
 
       {/* Progress moved to toast notifications */}
 
       {/* Export Buttons */}
-      <div className="grid grid-cols-2 gap-3">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         <Button
           onClick={handleDownloadAll}
-          disabled={disabled || isExporting || exportItems.length === 0}
+          disabled={isExportDisabled}
           variant="outline"
-          className="bg-transparent"
+          className="h-12 rounded-xl bg-white/90 border-gray-300 text-gray-700 font-medium shadow-sm hover:bg-white hover:border-gray-400 hover:shadow-md transition-all focus:ring-2 focus:ring-primary/20 disabled:opacity-50 disabled:cursor-not-allowed"
         >
-          <Download className="w-4 h-4 mr-2" />
+          <Download className="w-5 h-5 mr-2" />
           Quick Download
         </Button>
 
         <Button
           onClick={handleExport}
-          disabled={disabled || isExporting || exportItems.length === 0}
-          className="bg-primary"
+          disabled={isExportDisabled}
+          className="h-12 rounded-xl bg-primary text-primary-foreground font-medium shadow-md hover:bg-primary/90 transition-all focus:ring-2 focus:ring-primary/20 disabled:opacity-50 disabled:cursor-not-allowed"
         >
-          <Package className="w-4 h-4 mr-2" />
+          <Package className="w-5 h-5 mr-2" />
           {isExporting ? "Exporting..." : "Export All"}
         </Button>
       </div>
 
       {/* Export Tips */}
-      <Alert>
-        <Info className="h-4 w-4 text-muted-foreground" />
+      <Alert className="bg-blue-50/60 border-blue-200">
+        <Info className="h-4 w-4 text-blue-600" />
         <AlertDescription>
-          <div className="space-y-1">
-            <p className="font-medium text-foreground">Export Tips</p>
-            <ul className="text-sm space-y-1 text-muted-foreground">
-              <li>• Files download individually to avoid browser limits</li>
-              <li>• Use custom patterns for consistent naming</li>
-              <li>• Check your browser's download folder</li>
+          <div className="space-y-2">
+            <p className="font-semibold text-gray-900">Export Tips</p>
+            <ul className="text-sm space-y-1.5 text-gray-700">
+              <li className="flex items-start gap-2">
+                <span className="w-1.5 h-1.5 rounded-full bg-blue-500 mt-2 flex-shrink-0"></span>
+                <span><strong>Quick Download:</strong> Files download individually to avoid browser limits</span>
+              </li>
+              <li className="flex items-start gap-2">
+                <span className="w-1.5 h-1.5 rounded-full bg-blue-500 mt-2 flex-shrink-0"></span>
+                <span><strong>Export All:</strong> All files packaged into ZIP file for easy management</span>
+              </li>
+              <li className="flex items-start gap-2">
+                <span className="w-1.5 h-1.5 rounded-full bg-blue-500 mt-2 flex-shrink-0"></span>
+                <span><strong>Naming Pattern:</strong> Use custom patterns for consistent filename formatting</span>
+              </li>
             </ul>
           </div>
         </AlertDescription>

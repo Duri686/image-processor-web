@@ -1,10 +1,11 @@
 "use client"
 
-import { useState } from "react"
-import { X, Download, Eye, EyeOff } from "lucide-react"
+import { useState, useRef, useCallback } from "react"
+import { X, Download, Eye, EyeOff, MoreVertical, Copy, Share } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Card } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu"
 import { formatFileSize } from "@/lib/image-processing"
 import { cn } from "@/lib/utils"
 
@@ -27,6 +28,10 @@ interface ImagePreviewProps {
 export function ImagePreview({ file, processedImage, onRemove, onDownload, className }: ImagePreviewProps) {
   const [showComparison, setShowComparison] = useState(false)
   const [originalDataUrl, setOriginalDataUrl] = useState<string>("")
+  const [isLongPressing, setIsLongPressing] = useState(false)
+  const [touchStartTime, setTouchStartTime] = useState(0)
+  const longPressTimer = useRef<NodeJS.Timeout | null>(null)
+  const touchStartPos = useRef({ x: 0, y: 0 })
 
   // Load original image for preview
   useState(() => {
@@ -40,6 +45,85 @@ export function ImagePreview({ file, processedImage, onRemove, onDownload, class
   const toggleComparison = () => {
     setShowComparison(!showComparison)
   }
+
+  // 移动端长按交互
+  const handleTouchStart = useCallback((e: React.TouchEvent) => {
+    const touch = e.touches[0]
+    touchStartPos.current = { x: touch.clientX, y: touch.clientY }
+    setTouchStartTime(Date.now())
+    
+    longPressTimer.current = setTimeout(() => {
+      setIsLongPressing(true)
+      // 触觉反馈
+      if (navigator.vibrate) {
+        navigator.vibrate(50)
+      }
+    }, 500) // 500ms 长按触发
+  }, [])
+
+  const handleTouchMove = useCallback((e: React.TouchEvent) => {
+    if (!longPressTimer.current) return
+    
+    const touch = e.touches[0]
+    const deltaX = Math.abs(touch.clientX - touchStartPos.current.x)
+    const deltaY = Math.abs(touch.clientY - touchStartPos.current.y)
+    
+    // 如果移动距离超过阈值，取消长按
+    if (deltaX > 10 || deltaY > 10) {
+      clearTimeout(longPressTimer.current)
+      longPressTimer.current = null
+    }
+  }, [])
+
+  const handleTouchEnd = useCallback(() => {
+    if (longPressTimer.current) {
+      clearTimeout(longPressTimer.current)
+      longPressTimer.current = null
+    }
+    
+    const touchDuration = Date.now() - touchStartTime
+    
+    // 短按切换对比视图
+    if (touchDuration < 500 && processedImage) {
+      toggleComparison()
+    }
+    
+    setIsLongPressing(false)
+  }, [processedImage])
+
+  // 复制图片到剪贴板
+  const handleCopyImage = useCallback(async () => {
+    if (!processedImage) return
+    
+    try {
+      const item = new ClipboardItem({
+        [processedImage.blob.type]: processedImage.blob
+      })
+      await navigator.clipboard.write([item])
+      // 这里可以添加toast提示
+    } catch (error) {
+      console.error('Failed to copy image:', error)
+    }
+  }, [processedImage])
+
+  // 分享图片
+  const handleShareImage = useCallback(async () => {
+    if (!processedImage || !navigator.share) return
+    
+    try {
+      const shareFile = new File([processedImage.blob], file.name, {
+        type: processedImage.blob.type
+      })
+      
+      await navigator.share({
+        files: [shareFile],
+        title: 'Optimized Image',
+        text: `Optimized ${file.name}`
+      })
+    } catch (error) {
+      console.error('Failed to share image:', error)
+    }
+  }, [processedImage, file.name])
 
   return (
     <Card className={cn("p-4 space-y-4", className)}>
@@ -55,26 +139,74 @@ export function ImagePreview({ file, processedImage, onRemove, onDownload, class
         </div>
 
         <div className="flex items-center gap-2 ml-4">
-          {processedImage && (
-            <Button variant="outline" size="sm" onClick={toggleComparison} className="h-8 px-2 bg-transparent">
-              {showComparison ? <EyeOff className="w-3 h-3" /> : <Eye className="w-3 h-3" />}
-            </Button>
-          )}
+          {/* 桌面端按钮 */}
+          <div className="hidden md:flex items-center gap-2">
+            {processedImage && (
+              <Button variant="outline" size="sm" onClick={toggleComparison} className="h-8 px-2 bg-transparent">
+                {showComparison ? <EyeOff className="w-3 h-3" /> : <Eye className="w-3 h-3" />}
+              </Button>
+            )}
 
-          {onDownload && processedImage && (
-            <Button variant="default" size="sm" onClick={onDownload} className="h-8 px-2">
-              <Download className="w-3 h-3" />
-            </Button>
-          )}
+            {onDownload && processedImage && (
+              <Button variant="default" size="sm" onClick={onDownload} className="h-8 px-2">
+                <Download className="w-3 h-3" />
+              </Button>
+            )}
 
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={onRemove}
-            className="h-8 px-2 text-destructive hover:text-destructive bg-transparent"
-          >
-            <X className="w-3 h-3" />
-          </Button>
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={onRemove}
+              className="h-8 px-2 text-destructive hover:text-destructive bg-transparent"
+            >
+              <X className="w-3 h-3" />
+            </Button>
+          </div>
+
+          {/* 移动端下拉菜单 */}
+          <div className="md:hidden">
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button variant="outline" size="sm" className="h-8 px-2 bg-transparent">
+                  <MoreVertical className="w-3 h-3" />
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end" className="w-48">
+                {processedImage && (
+                  <DropdownMenuItem onClick={toggleComparison}>
+                    {showComparison ? <EyeOff className="w-4 h-4 mr-2" /> : <Eye className="w-4 h-4 mr-2" />}
+                    {showComparison ? "Hide Comparison" : "Show Comparison"}
+                  </DropdownMenuItem>
+                )}
+                
+                {onDownload && processedImage && (
+                  <DropdownMenuItem onClick={onDownload}>
+                    <Download className="w-4 h-4 mr-2" />
+                    Download
+                  </DropdownMenuItem>
+                )}
+                
+                {processedImage && navigator.clipboard && (
+                  <DropdownMenuItem onClick={handleCopyImage}>
+                    <Copy className="w-4 h-4 mr-2" />
+                    Copy Image
+                  </DropdownMenuItem>
+                )}
+                
+                {processedImage && typeof navigator !== 'undefined' && navigator.share && (
+                  <DropdownMenuItem onClick={handleShareImage}>
+                    <Share className="w-4 h-4 mr-2" />
+                    Share
+                  </DropdownMenuItem>
+                )}
+                
+                <DropdownMenuItem onClick={onRemove} className="text-destructive">
+                  <X className="w-4 h-4 mr-2" />
+                  Remove
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
+          </div>
         </div>
       </div>
 
@@ -85,13 +217,22 @@ export function ImagePreview({ file, processedImage, onRemove, onDownload, class
           <div className="grid grid-cols-2 gap-4">
             <div className="space-y-2">
               <div className="text-xs font-medium text-muted-foreground">Original</div>
-              <div className="bg-muted rounded-lg overflow-hidden h-40 md:h-48 border">
+              <div 
+                className={cn(
+                  "bg-muted rounded-lg overflow-hidden h-40 md:h-48 border transition-all duration-200",
+                  isLongPressing && "ring-2 ring-primary/50 scale-[0.98]"
+                )}
+                onTouchStart={handleTouchStart}
+                onTouchMove={handleTouchMove}
+                onTouchEnd={handleTouchEnd}
+              >
                 {originalDataUrl && (
                   <img
                     src={originalDataUrl || "/placeholder.svg"}
                     alt="Original"
-                    className="w-full h-full object-contain"
+                    className="w-full h-full object-contain select-none"
                     loading="lazy"
+                    draggable={false}
                   />
                 )}
               </div>
@@ -100,12 +241,21 @@ export function ImagePreview({ file, processedImage, onRemove, onDownload, class
 
             <div className="space-y-2">
               <div className="text-xs font-medium text-muted-foreground">Optimized</div>
-              <div className="bg-muted rounded-lg overflow-hidden h-40 md:h-48 border">
+              <div 
+                className={cn(
+                  "bg-muted rounded-lg overflow-hidden h-40 md:h-48 border transition-all duration-200",
+                  isLongPressing && "ring-2 ring-primary/50 scale-[0.98]"
+                )}
+                onTouchStart={handleTouchStart}
+                onTouchMove={handleTouchMove}
+                onTouchEnd={handleTouchEnd}
+              >
                 <img
                   src={processedImage.dataUrl || "/placeholder.svg"}
                   alt="Optimized"
-                  className="w-full h-full object-contain"
+                  className="w-full h-full object-contain select-none"
                   loading="lazy"
+                  draggable={false}
                 />
               </div>
               <div className="text-xs text-muted-foreground">
@@ -128,12 +278,21 @@ export function ImagePreview({ file, processedImage, onRemove, onDownload, class
         ) : processedImage ? (
           // Compact horizontal layout when image is processed
           <div className="flex items-center gap-4">
-            <div className="shrink-0 bg-muted rounded-lg overflow-hidden w-28 h-20 md:w-40 md:h-28 border">
+            <div 
+              className={cn(
+                "shrink-0 bg-muted rounded-lg overflow-hidden w-28 h-20 md:w-40 md:h-28 border transition-all duration-200",
+                isLongPressing && "ring-2 ring-primary/50 scale-[0.98]"
+              )}
+              onTouchStart={handleTouchStart}
+              onTouchMove={handleTouchMove}
+              onTouchEnd={handleTouchEnd}
+            >
               <img
                 src={processedImage.dataUrl || "/placeholder.svg"}
                 alt="Preview"
-                className="w-full h-full object-contain"
+                className="w-full h-full object-contain select-none"
                 loading="lazy"
+                draggable={false}
               />
             </div>
             <div className="flex-1 min-w-0">
@@ -162,13 +321,22 @@ export function ImagePreview({ file, processedImage, onRemove, onDownload, class
         ) : (
           // Single image view (original only)
           <div className="space-y-2">
-            <div className="bg-muted rounded-lg overflow-hidden h-44 md:h-56 border">
+            <div 
+              className={cn(
+                "bg-muted rounded-lg overflow-hidden h-44 md:h-56 border transition-all duration-200",
+                isLongPressing && "ring-2 ring-primary/50 scale-[0.98]"
+              )}
+              onTouchStart={handleTouchStart}
+              onTouchMove={handleTouchMove}
+              onTouchEnd={handleTouchEnd}
+            >
               {originalDataUrl ? (
                 <img
                   src={originalDataUrl || "/placeholder.svg"}
                   alt="Original"
-                  className="w-full h-full object-contain"
+                  className="w-full h-full object-contain select-none"
                   loading="lazy"
+                  draggable={false}
                 />
               ) : (
                 <div className="w-full h-full flex items-center justify-center">

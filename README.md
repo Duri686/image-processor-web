@@ -6,7 +6,7 @@
 [![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
 [![Cloudflare Pages](https://img.shields.io/badge/Deploy-Cloudflare_Pages-orange)](https://pages.cloudflare.com/)
 [![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg)](CONTRIBUTING.md)
-[![Stars](https://img.shields.io/github/stars/Duri686/image-processor-web.svg?style=social)](https://github.com/Duri686/image-processor-web)
+[![Stars](https://img.shields.io/github/stars/Duri686/image-processor-web?style=social&logo=github&cacheSeconds=300)](https://github.com/Duri686/image-processor-web)
 
 🌐 **Live Demo:** [img.geo4ai.com](https://img.geo4ai.com)
 
@@ -85,7 +85,7 @@ postcss.config.mjs      # 使用 @tailwindcss/postcss（Tailwind v4）
 ### 1. Clone the repo
 
 ```bash
-git clone https://github.com/your-username/image-processor-web.git
+git clone https://github.com/Duri686/image-processor-web.git
 cd image-processor-web
 ```
 
@@ -107,27 +107,27 @@ Open [http://localhost:3000](http://localhost:3000)
 
 ### 4. Build & Deploy
 
-本项目推荐使用 **Cloudflare Pages + @cloudflare/next-on-pages** 部署：
+本项目推荐使用 **Cloudflare Pages + @cloudflare/next-on-pages** 部署 / Deploy with Cloudflare Pages + next-on-pages：
 
-- Build Command：
+* Build Command / 构建命令：
 
 ```bash
 npx @cloudflare/next-on-pages@1
 ```
 
-- Output Directory：
+* Output Directory / 输出目录：
 
-```
+```text
 .vercel/output/static
 ```
 
-- Runtime Compatibility Flag：在 Pages 控制台 Settings → Functions/Runtime 中为 Production/Preview 添加：
-  - `nodejs_compat`（若列表无此项，可选择 `node` 宏标志）
+* Runtime Compatibility Flag / 运行时兼容标志：在 Pages 控制台 Settings → Functions/Runtime 中为 Production/Preview 添加：
+  * `nodejs_compat`（若列表无此项，可选择 `node` 宏标志）
 
 Notes / 说明：
 
 * 本项目为纯前端（无后端接口），`next.config.mjs` 中 `images.unoptimized = true`。
-* 已在仓库加入 `wrangler.toml` 以声明 `compatibility_flags = ["nodejs_compat"]`（建议同时在控制台也开启）。
+* 已在仓库加入 `wrangler.toml` 声明 `compatibility_flags = ["nodejs_compat"]`（建议在控制台也开启）。
 
 #### Other scripts / 其他脚本
 
@@ -171,7 +171,7 @@ PRs and issues are welcome!
 
 ## 🔗 Related
 
-* 🌍 Main site: [geo4ai.com](https://geo4ai.com)
-* 🛠 Tools subdomain: [img.geo4ai.com](https://img.geo4ai.com)
+* 🌍 Main site / 主站: [geo4ai.com](https://geo4ai.com)
+* 🛠 Tools subdomain / 工具域名: [img.geo4ai.com](https://img.geo4ai.com)
 
 ---

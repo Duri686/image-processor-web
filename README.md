@@ -3,11 +3,12 @@
 > A pure client-side web tool for image optimization, compression, and format conversion — all in your browser, no server required.
 > 基于纯浏览器端的图像处理工具，支持压缩、优化与格式转换，无需服务器即可完成。
 
+[![Ask DeepWiki](https://deepwiki.com/badge.svg)](https://deepwiki.com/Duri686/image-processor-web)
 [![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
 [![Cloudflare Pages](https://img.shields.io/badge/Deploy-Cloudflare_Pages-orange)](https://pages.cloudflare.com/)
 [![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg)](CONTRIBUTING.md)
 [![Stars](https://img.shields.io/github/stars/Duri686/image-processor-web?style=social&logo=github&cacheSeconds=300)](https://github.com/Duri686/image-processor-web)
-[![Ask DeepWiki](https://deepwiki.com/badge.svg)](https://deepwiki.com/Duri686/image-processor-web)
+
 
 🌐 **Live Demo:** [img.geo4ai.com](https://img.geo4ai.com)
 

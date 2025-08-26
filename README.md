@@ -7,6 +7,7 @@
 [![Cloudflare Pages](https://img.shields.io/badge/Deploy-Cloudflare_Pages-orange)](https://pages.cloudflare.com/)
 [![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg)](CONTRIBUTING.md)
 [![Stars](https://img.shields.io/github/stars/Duri686/image-processor-web?style=social&logo=github&cacheSeconds=300)](https://github.com/Duri686/image-processor-web)
+[![Ask DeepWiki](https://deepwiki.com/badge.svg)](https://deepwiki.com/Duri686/image-processor-web)
 
 🌐 **Live Demo:** [img.geo4ai.com](https://img.geo4ai.com)
 

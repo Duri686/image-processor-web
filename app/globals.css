@@ -72,64 +72,64 @@
 }
 
 .dark {
-  /* Dark mode gradient colors */
-  --gradient-from: #4A5D23; /* Darker green */
-  --gradient-via: #1F2937; /* Dark gray */
-  --gradient-to: #111827; /* Very dark gray */
+  /* Modern dark mode gradient colors */
+  --gradient-from: #1E293B; /* Sophisticated dark slate */
+  --gradient-via: #0F172A; /* Deep navy */
+  --gradient-to: #020617; /* Rich black */
   
-  /* Core dark theme colors */
-  --background: #0F172A; /* Deep dark blue */
-  --foreground: #F8FAFC; /* Light text */
+  /* Core dark theme colors - warmer and more sophisticated */
+  --background: #0A0E1A; /* Rich dark with subtle warmth */
+  --foreground: #F1F5F9; /* Soft white with slight blue tint */
   
-  /* Card and surface colors */
-  --card: rgba(30, 41, 59, 0.8); /* Semi-transparent dark */
-  --card-foreground: #F8FAFC;
+  /* Card and surface colors - better contrast and depth */
+  --card: rgba(15, 23, 42, 0.95); /* More opaque for better readability */
+  --card-foreground: #F1F5F9;
   --popover: #1E293B;
-  --popover-foreground: #F8FAFC;
+  --popover-foreground: #F1F5F9;
   
-  /* Primary brand system for dark mode */
-  --primary: #7DB85A; /* Darker green for dark mode */
-  --primary-foreground: #F8FAFC;
-  --primary-hover: #6CAC44;
-  --primary-active: #5B9A2E;
+  /* Primary brand system - more vibrant and accessible */
+  --primary: #84CC6A; /* Brighter, more accessible green */
+  --primary-foreground: #0A0E1A;
+  --primary-hover: #6FB84F;
+  --primary-active: #5AA434;
   
-  /* Secondary colors for dark mode */
+  /* Secondary colors - warmer grays */
   --secondary: #1E293B;
-  --secondary-foreground: #CBD5E1;
+  --secondary-foreground: #E2E8F0;
   
-  /* Muted colors */
-  --muted: #1E293B;
-  --muted-foreground: #94A3B8;
+  /* Muted colors - better hierarchy */
+  --muted: #1A202C;
+  --muted-foreground: #A0AEC0;
   
-  /* Accent colors */
-  --accent: #334155;
-  --accent-foreground: #F1F5F9;
+  /* Accent colors - more sophisticated */
+  --accent: #2D3748;
+  --accent-foreground: #E2E8F0;
   
-  /* Status colors */
-  --destructive: #F87171;
-  --destructive-foreground: #0F172A;
+  /* Status colors - modern and accessible */
+  --destructive: #F56565;
+  --destructive-foreground: #FFFFFF;
   
-  /* Border and input styling */
-  --border: #334155;
-  --input: #1E293B;
-  --ring: rgba(125, 184, 90, 0.3);
+  /* Border and input styling - subtle but defined */
+  --border: #2D3748;
+  --input: #1A202C;
+  --ring: rgba(132, 204, 106, 0.4);
   
-  /* Chart colors for dark mode */
-  --chart-1: #7DB85A;
-  --chart-2: #6CAC44;
-  --chart-3: #5B9A2E;
-  --chart-4: #4A8818;
-  --chart-5: #397602;
+  /* Chart colors - harmonized palette */
+  --chart-1: #84CC6A;
+  --chart-2: #6FB84F;
+  --chart-3: #5AA434;
+  --chart-4: #459019;
+  --chart-5: #2F7C00;
   
-  /* Sidebar colors for dark mode */
-  --sidebar: rgba(15, 23, 42, 0.9);
-  --sidebar-foreground: #F8FAFC;
-  --sidebar-primary: #7DB85A;
-  --sidebar-primary-foreground: #F8FAFC;
+  /* Sidebar colors - consistent with new palette */
+  --sidebar: rgba(10, 14, 26, 0.95);
+  --sidebar-foreground: #F1F5F9;
+  --sidebar-primary: #84CC6A;
+  --sidebar-primary-foreground: #0A0E1A;
   --sidebar-accent: #1E293B;
-  --sidebar-accent-foreground: #CBD5E1;
-  --sidebar-border: #334155;
-  --sidebar-ring: rgba(125, 184, 90, 0.3);
+  --sidebar-accent-foreground: #E2E8F0;
+  --sidebar-border: #2D3748;
+  --sidebar-ring: rgba(132, 204, 106, 0.4);
 }
 
 @theme inline {

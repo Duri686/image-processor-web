@@ -1,8 +1,11 @@
 "use client"
 
+import { useState } from "react"
 import { FaviconGenerator } from "@/components/favicon-generator"
 import { OGImageGenerator } from "@/components/og-image-generator"
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
+import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs"
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
+import { Label } from "@/components/ui/label"
 import { Wand2 } from "lucide-react"
 import type { ImageFile } from "@/components/image-manager"
 
@@ -12,38 +15,63 @@ interface GenerationTabsProps {
 }
 
 export function GenerationTabs({ images, isProcessing }: GenerationTabsProps) {
+  const [selectedTab, setSelectedTab] = useState("favicon-gen")
+
   return (
-    <div className="bg-white/40 backdrop-blur-sm rounded-xl p-4 sm:p-6 border border-white/30">
-      <div className="flex items-center gap-3 mb-4 sm:mb-6">
-        <div className="p-2 rounded-xl bg-primary/10 border border-primary/20">
+    <div className="space-y-4 md:space-y-6">
+      {/* Header */}
+      <div className="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-4 md:p-6">
+        <div className="flex items-center gap-3">
           <Wand2 className="w-5 h-5 text-primary" />
-        </div>
-        <div>
-          <h3 className="text-lg sm:text-xl font-bold font-serif text-gray-900">Image Generation</h3>
-          <p className="text-sm sm:text-sm text-gray-600 mt-1">Create favicons and social media images</p>
+          <div>
+            <h3 className="text-lg md:text-xl font-bold text-gray-900 dark:text-gray-100">Image Generation</h3>
+            <p className="text-sm text-gray-600 dark:text-gray-400">Create favicons and social media images</p>
+          </div>
         </div>
       </div>
 
-      <Tabs defaultValue="favicon-gen" className="w-full" aria-label="Generators">
-        <TabsList className="grid w-full grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-2 rounded-xl bg-white shadow-md shadow-gray-200/30 p-4 sm:p-3 text-sm border border-gray-100">
-          <TabsTrigger value="favicon-gen" className="flex items-center justify-start gap-3 h-14 sm:h-12 px-5 sm:px-4 rounded-xl font-medium transition-all duration-300 data-[state=active]:bg-primary data-[state=active]:text-white data-[state=active]:shadow-lg data-[state=active]:shadow-primary/20 hover:bg-gray-50 hover:shadow-sm text-gray-700 text-base sm:text-sm border border-transparent data-[state=active]:border-primary/20">
-            <div className="w-2.5 h-2.5 rounded-full bg-gray-400 data-[state=active]:bg-white/80"></div>
-            <span className="font-semibold sm:font-medium">Favicon</span>
-          </TabsTrigger>
-          <TabsTrigger value="og-gen" className="flex items-center justify-start gap-3 h-14 sm:h-12 px-5 sm:px-4 rounded-xl font-medium transition-all duration-300 data-[state=active]:bg-primary data-[state=active]:text-white data-[state=active]:shadow-lg data-[state=active]:shadow-primary/20 hover:bg-gray-50 hover:shadow-sm text-gray-700 text-base sm:text-sm border border-transparent data-[state=active]:border-primary/20">
-            <div className="w-2.5 h-2.5 rounded-full bg-gray-400 data-[state=active]:bg-white/80"></div>
-            <span className="font-semibold sm:font-medium">OG Image</span>
-          </TabsTrigger>
-        </TabsList>
+      {/* Navigation */}
+      <div className="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-4 md:p-6">
+        {/* Mobile Select */}
+        <div className="md:hidden space-y-3">
+          <Label className="text-sm font-medium text-gray-900 dark:text-gray-100">Generator Type</Label>
+          <Select value={selectedTab} onValueChange={setSelectedTab}>
+            <SelectTrigger className="h-12 rounded-lg bg-white dark:bg-gray-700 border-gray-300 dark:border-gray-600">
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent className="rounded-lg bg-white dark:bg-gray-700 shadow-lg">
+              <SelectItem value="favicon-gen">Favicon Generator</SelectItem>
+              <SelectItem value="og-gen">OG Image Generator</SelectItem>
+            </SelectContent>
+          </Select>
+        </div>
 
-        <TabsContent value="favicon-gen" className="mt-4 sm:mt-6">
-          <FaviconGenerator selectedFiles={images.map((img) => img.file)} disabled={isProcessing} />
-        </TabsContent>
+        {/* Desktop Tabs */}
+        <Tabs value={selectedTab} onValueChange={setSelectedTab} className="w-full hidden md:block">
+          <TabsList className="grid w-full grid-cols-2 bg-gray-100 dark:bg-gray-700 rounded-lg p-1">
+            <TabsTrigger 
+              value="favicon-gen" 
+              className="rounded-md py-2 px-4 text-gray-700 dark:text-gray-300 data-[state=active]:bg-white dark:data-[state=active]:bg-gray-600 data-[state=active]:text-gray-900 dark:data-[state=active]:text-gray-100 data-[state=active]:shadow-sm"
+            >
+              Favicon Generator
+            </TabsTrigger>
+            <TabsTrigger 
+              value="og-gen" 
+              className="rounded-md py-2 px-4 text-gray-700 dark:text-gray-300 data-[state=active]:bg-white dark:data-[state=active]:bg-gray-600 data-[state=active]:text-gray-900 dark:data-[state=active]:text-gray-100 data-[state=active]:shadow-sm"
+            >
+              OG Image Generator
+            </TabsTrigger>
+          </TabsList>
+        </Tabs>
+      </div>
 
-        <TabsContent value="og-gen" className="mt-4 sm:mt-6">
-          <OGImageGenerator disabled={isProcessing} />
-        </TabsContent>
-      </Tabs>
+      {/* Content */}
+      {selectedTab === "favicon-gen" && (
+        <FaviconGenerator selectedFiles={images.map((img) => img.file)} disabled={isProcessing} />
+      )}
+      {selectedTab === "og-gen" && (
+        <OGImageGenerator disabled={isProcessing} />
+      )}
     </div>
   )
 }

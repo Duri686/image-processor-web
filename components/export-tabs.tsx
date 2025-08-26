@@ -11,14 +11,12 @@ interface ExportTabsProps {
 
 export function ExportTabs({ exportItems, isProcessing }: ExportTabsProps) {
   return (
-    <div className="bg-white/40 backdrop-blur-sm rounded-xl p-4 sm:p-6 border border-white/30">
-      <div className="flex items-center gap-3 mb-4 sm:mb-6">
-        <div className="p-2 rounded-xl bg-primary/10 border border-primary/20">
-          <DownloadCloud className="w-5 h-5 text-primary" />
-        </div>
+    <div className="space-y-4 md:space-y-6">
+      <div className="flex items-center gap-3">
+        <DownloadCloud className="w-5 h-5 text-primary" />
         <div>
-          <h3 className="text-lg sm:text-xl font-bold font-serif text-gray-900">Export & Download</h3>
-          <p className="text-sm sm:text-sm text-gray-600 mt-1">Download your processed images individually or as a batch</p>
+          <h3 className="text-lg md:text-xl font-bold text-gray-900 dark:text-gray-100">Export & Download</h3>
+          <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">Download your processed images individually or as a batch</p>
         </div>
       </div>
       <DownloadManager exportItems={exportItems} disabled={isProcessing} />

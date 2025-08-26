@@ -2,13 +2,12 @@
 
 import { useState, useEffect } from "react"
 import { Button } from "@/components/ui/button"
-import { Card } from "@/components/ui/card"
 import { Slider } from "@/components/ui/slider"
 import { Label } from "@/components/ui/label"
 import { Badge } from "@/components/ui/badge"
 import { Alert, AlertDescription } from "@/components/ui/alert"
 import { Switch } from "@/components/ui/switch"
-import { FileImage, CheckCircle, AlertCircle, Info, Loader2, Zap } from "lucide-react"
+import { FileImage, CheckCircle, AlertCircle, Info, Loader2 } from "lucide-react"
 import { toast } from "sonner"
 
 interface WebPConverterProps {
@@ -23,6 +22,7 @@ export function WebPConverter({ onConvert, quality, onQualityChange, disabled = 
   const [lossless, setLossless] = useState(false)
   const [isConverting, setIsConverting] = useState(false)
   const [conversionSuccess, setConversionSuccess] = useState(false)
+  const [errorMsg, setErrorMsg] = useState<string | null>(null)
 
   // Check WebP support
   useEffect(() => {
@@ -40,6 +40,7 @@ export function WebPConverter({ onConvert, quality, onQualityChange, disabled = 
   const handleConvert = async () => {
     setIsConverting(true)
     setConversionSuccess(false)
+    setErrorMsg(null)
     
     try {
       toast.loading("Converting to WebP format...", { 
@@ -63,6 +64,7 @@ export function WebPConverter({ onConvert, quality, onQualityChange, disabled = 
         description: "Please check image format or try again", 
         duration: 4000 
       })
+      setErrorMsg("Conversion failed. Please check the image format and try again.")
     } finally {
       setIsConverting(false)
     }
@@ -76,15 +78,13 @@ export function WebPConverter({ onConvert, quality, onQualityChange, disabled = 
   }
 
   return (
-    <div className="bg-card/60 backdrop-blur-sm rounded-2xl p-8 border border-white/30 space-y-8">
+    <div className="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-6 space-y-6">
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-3">
-          <div className="p-2 rounded-xl bg-primary/10 border border-primary/20">
-            <FileImage className="w-5 h-5 text-primary" />
-          </div>
+          <FileImage className="w-5 h-5 text-primary" />
           <div>
-            <h2 className="text-xl font-bold font-serif text-foreground">WebP Conversion</h2>
-            <p className="text-sm text-muted-foreground">Modern image format with superior compression</p>
+            <h2 className="text-xl font-bold text-gray-900 dark:text-gray-100">WebP Conversion</h2>
+            <p className="text-sm text-gray-600 dark:text-gray-400">Modern image format with superior compression</p>
           </div>
         </div>
 
@@ -93,8 +93,8 @@ export function WebPConverter({ onConvert, quality, onQualityChange, disabled = 
             variant="outline"
             className={
               webpSupported
-                ? "flex items-center gap-2 px-3 py-1.5 text-sm bg-primary/10 text-primary border-primary/20 rounded-xl"
-                : "flex items-center gap-2 px-3 py-1.5 text-sm bg-amber-50 text-amber-700 border-amber-200 rounded-xl"
+                ? "flex items-center gap-2 px-3 py-1 text-sm rounded-lg bg-green-50 dark:bg-green-900/20 text-green-800 dark:text-green-400 border-green-200 dark:border-green-700"
+                : "flex items-center gap-2 px-3 py-1 text-sm rounded-lg bg-gray-50 dark:bg-gray-700 text-gray-700 dark:text-gray-300 border-gray-200 dark:border-gray-600"
             }
           >
             {webpSupported ? (
@@ -114,67 +114,58 @@ export function WebPConverter({ onConvert, quality, onQualityChange, disabled = 
 
       {/* Browser Support Alert */}
       {webpSupported === false && (
-        <div className="p-4 rounded-xl bg-amber-50/80 backdrop-blur-sm border border-amber-200/50">
-          <div className="flex items-start gap-3">
-            <Info className="h-5 w-5 text-amber-600 mt-0.5 flex-shrink-0" />
-            <div className="text-sm text-amber-800">
-              <p className="font-medium mb-1">Limited WebP Support</p>
-              <p className="text-amber-700">Your browser has limited WebP support. Images will still convert, but preview may not work properly.</p>
-            </div>
-          </div>
-        </div>
+        <Alert className="bg-blue-50 dark:bg-blue-900/20 border-blue-200 dark:border-blue-800">
+          <Info className="h-4 w-4 text-blue-600 dark:text-blue-400" />
+          <AlertDescription className="text-blue-800 dark:text-blue-300">
+            <span className="font-medium">Limited WebP Support:</span> Your browser has limited WebP support. Images will still convert, but preview may not work properly.
+          </AlertDescription>
+        </Alert>
       )}
 
       {/* WebP Benefits */}
-      <div className="bg-white/40 backdrop-blur-sm rounded-xl p-6 border border-white/30">
-        <div className="flex items-center gap-2 mb-4">
-          <div className="w-2 h-2 rounded-full bg-primary"></div>
-          <h3 className="text-lg font-semibold font-serif text-foreground">WebP Benefits</h3>
-        </div>
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <div className="flex items-center gap-3 p-3 rounded-lg bg-primary/5 border border-primary/10">
-            <div className="px-3 h-8 rounded-lg bg-primary/20 flex items-center justify-center">
-              <span className="text-primary font-bold text-sm">{getSavingsEstimate()}</span>
+      <div className="space-y-4">
+        <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100">WebP Benefits</h3>
+        <div className="grid grid-cols-2 gap-3">
+          <div className="flex items-center gap-2 p-3 rounded-lg bg-gray-50 dark:bg-gray-700">
+            <div className="px-2 py-1 rounded bg-primary text-primary-foreground text-xs font-bold">
+              {getSavingsEstimate()}
             </div>
-            <span className="text-sm font-medium text-foreground">Smaller file sizes</span>
+            <span className="text-sm font-medium text-gray-900 dark:text-gray-100">Smaller files</span>
           </div>
-          <div className="flex items-center gap-3 p-3 rounded-lg bg-primary/5 border border-primary/10">
-            <CheckCircle className="w-5 h-5 text-primary" />
-            <span className="text-sm font-medium text-foreground">Better compression</span>
+          <div className="flex items-center gap-2 p-3 rounded-lg bg-gray-50 dark:bg-gray-700">
+            <CheckCircle className="w-4 h-4 text-primary" />
+            <span className="text-sm font-medium text-gray-900 dark:text-gray-100">Better compression</span>
           </div>
-          <div className="flex items-center gap-3 p-3 rounded-lg bg-primary/5 border border-primary/10">
-            <CheckCircle className="w-5 h-5 text-primary" />
-            <span className="text-sm font-medium text-foreground">Supports transparency</span>
+          <div className="flex items-center gap-2 p-3 rounded-lg bg-gray-50 dark:bg-gray-700">
+            <CheckCircle className="w-4 h-4 text-primary" />
+            <span className="text-sm font-medium text-gray-900 dark:text-gray-100">Transparency</span>
           </div>
-          <div className="flex items-center gap-3 p-3 rounded-lg bg-primary/5 border border-primary/10">
-            <CheckCircle className="w-5 h-5 text-primary" />
-            <span className="text-sm font-medium text-foreground">Modern browser support</span>
+          <div className="flex items-center gap-2 p-3 rounded-lg bg-gray-50 dark:bg-gray-700">
+            <CheckCircle className="w-4 h-4 text-primary" />
+            <span className="text-sm font-medium text-gray-900 dark:text-gray-100">Modern support</span>
           </div>
         </div>
       </div>
 
-      {/* Conversion Options */}
-      <div className="bg-white/40 backdrop-blur-sm rounded-xl p-6 border border-white/30 space-y-6">
-        <div className="flex items-center gap-2 mb-2">
-          <div className="w-2 h-2 rounded-full bg-primary"></div>
-          <h3 className="text-lg font-semibold font-serif text-foreground">Conversion Settings</h3>
-        </div>
+      {/* Conversion Settings */}
+      <div className="space-y-6">
+        <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100">Conversion Settings</h3>
 
         {/* Lossless Toggle */}
-        <div className="flex items-center justify-between p-4 rounded-xl bg-white/50 border border-white/40">
-          <div className="space-y-1">
-            <Label className="text-base font-medium text-foreground">Lossless Compression</Label>
-            <p className="text-sm text-muted-foreground">Perfect quality, larger file size</p>
+        <div className="flex items-center justify-between p-4 rounded-lg bg-gray-50 dark:bg-gray-700">
+          <div>
+            <Label className="text-sm font-medium text-gray-900 dark:text-gray-100">Lossless Compression</Label>
+            <p className="text-xs text-gray-600 dark:text-gray-400">Perfect quality, larger file size</p>
           </div>
           <Switch checked={lossless} onCheckedChange={setLossless} disabled={disabled} />
         </div>
 
         {/* Quality Control (only for lossy) */}
         {!lossless && (
-          <div className="space-y-4 p-4 rounded-xl bg-white/50 border border-white/40">
+          <div className="space-y-4">
             <div className="flex items-center justify-between">
-              <Label className="text-base font-medium text-foreground">WebP Quality</Label>
-              <div className="px-3 py-1 rounded-lg bg-primary/20 text-primary font-bold text-sm">
+              <Label className="text-sm font-medium text-gray-900 dark:text-gray-100">WebP Quality</Label>
+              <div className="px-2 py-1 rounded bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 text-xs font-mono">
                 {Math.round(quality * 100)}%
               </div>
             </div>
@@ -187,7 +178,7 @@ export function WebPConverter({ onConvert, quality, onQualityChange, disabled = 
               disabled={disabled}
               className="w-full"
             />
-            <div className="flex justify-between text-sm text-muted-foreground">
+            <div className="flex justify-between text-xs text-gray-500 dark:text-gray-400">
               <span>Smaller file</span>
               <span>Better quality</span>
             </div>
@@ -195,77 +186,67 @@ export function WebPConverter({ onConvert, quality, onQualityChange, disabled = 
         )}
 
         {/* Estimated Savings */}
-        <div className="p-4 rounded-xl bg-gradient-to-r from-primary/10 to-primary/5 border border-primary/20">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-2">
-              <CheckCircle className="w-5 h-5 text-primary" />
-              <span className="font-medium text-foreground">Estimated size reduction</span>
-            </div>
-            <div className="px-3 py-1.5 rounded-lg bg-primary/20 text-primary font-bold">
-              {getSavingsEstimate()}
-            </div>
-          </div>
-        </div>
+        <Alert className="bg-blue-50 dark:bg-blue-900/20 border-blue-200 dark:border-blue-800">
+          <CheckCircle className="h-4 w-4 text-blue-600 dark:text-blue-400" />
+          <AlertDescription className="text-blue-800 dark:text-blue-300">
+            <span className="font-medium">Estimated size reduction:</span> {getSavingsEstimate()}
+          </AlertDescription>
+        </Alert>
 
         {/* Convert Button */}
         <Button 
           onClick={handleConvert} 
           disabled={disabled || isConverting} 
-          className={`cursor-pointer w-full h-12 text-base font-semibold rounded-xl shadow-lg hover:shadow-xl transition-all duration-200 ${
-            conversionSuccess 
-              ? 'bg-primary/90 hover:bg-primary text-primary-foreground border-2 border-primary' 
-              : isConverting 
-                ? 'bg-primary/70 cursor-not-allowed' 
-                : 'bg-primary hover:bg-primary/90'
-          }`}
-          size="lg"
+          className="w-full h-12 rounded-lg font-medium"
         >
           {isConverting ? (
             <>
-              <Loader2 className="w-5 h-5 mr-2 animate-spin" />
+              <Loader2 className="w-4 h-4 mr-2 animate-spin" />
               Converting...
-            </>
-          ) : conversionSuccess ? (
-            <>
-              <CheckCircle className="w-5 h-5 mr-2" />
-              Conversion Complete
             </>
           ) : (
             <>
-              <FileImage className="w-5 h-5 mr-2" />
+              <FileImage className="w-4 h-4 mr-2" />
               Convert to WebP
             </>
           )}
         </Button>
+
+        {/* Feedback States */}
+        {conversionSuccess && (
+          <Alert className="bg-green-50 dark:bg-green-900/20 border-green-200 dark:border-green-700">
+            <AlertDescription className="text-green-800 dark:text-green-300 flex items-center gap-2">
+              <CheckCircle className="w-4 h-4" /> Conversion complete
+            </AlertDescription>
+          </Alert>
+        )}
+        {errorMsg && (
+          <Alert className="bg-red-50 dark:bg-red-900/20 border-red-200 dark:border-red-700">
+            <AlertDescription className="text-red-800 dark:text-red-300 flex items-center gap-2">
+              <AlertCircle className="w-4 h-4" /> {errorMsg}
+            </AlertDescription>
+          </Alert>
+        )}
       </div>
 
       {/* Format Comparison */}
-      <div className="bg-white/40 backdrop-blur-sm rounded-xl p-6 border border-white/30">
-        <div className="flex items-center gap-2 mb-4">
-          <div className="w-2 h-2 rounded-full bg-primary"></div>
-          <h3 className="text-lg font-semibold font-serif text-foreground">Format Comparison</h3>
-        </div>
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-          <div className="p-4 bg-white/50 rounded-xl border border-white/40 text-center">
-            <div className="w-12 h-12 mx-auto mb-3 rounded-xl bg-gray-100 flex items-center justify-center">
-              <span className="text-gray-600 font-bold text-sm">JPEG</span>
-            </div>
-            <div className="font-semibold text-foreground mb-1">JPEG</div>
-            <div className="text-sm text-muted-foreground">Lossy compression only</div>
+      <div className="space-y-4">
+        <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100">Format Comparison</h3>
+        <div className="grid grid-cols-3 gap-3">
+          <div className="p-3 bg-gray-50 dark:bg-gray-700 rounded-lg text-center">
+            <div className="text-xs font-bold text-gray-600 dark:text-gray-400 mb-1">JPEG</div>
+            <div className="text-xs text-gray-500 dark:text-gray-400">Lossy only</div>
           </div>
-          <div className="p-4 bg-white/50 rounded-xl border border-white/40 text-center">
-            <div className="w-12 h-12 mx-auto mb-3 rounded-xl bg-blue-100 flex items-center justify-center">
-              <span className="text-blue-600 font-bold text-sm">PNG</span>
-            </div>
-            <div className="font-semibold text-foreground mb-1">PNG</div>
-            <div className="text-sm text-muted-foreground">Lossless compression only</div>
+          <div className="p-3 bg-gray-50 dark:bg-gray-700 rounded-lg text-center">
+            <div className="text-xs font-bold text-gray-600 dark:text-gray-400 mb-1">PNG</div>
+            <div className="text-xs text-gray-500 dark:text-gray-400">Lossless only</div>
           </div>
-          <div className="p-4 bg-gradient-to-br from-primary/20 to-primary/10 rounded-xl border border-primary/30 text-center">
-            <div className="w-12 h-12 mx-auto mb-3 rounded-xl bg-primary/30 flex items-center justify-center">
-              <CheckCircle className="w-6 h-6 text-primary" />
+          <div className="p-3 bg-primary/10 dark:bg-primary/20 rounded-lg text-center border border-primary/20 dark:border-primary/30">
+            <div className="text-xs font-bold text-primary mb-1 flex items-center justify-center gap-1">
+              <CheckCircle className="w-3 h-3" />
+              WebP
             </div>
-            <div className="font-semibold text-primary mb-1">WebP</div>
-            <div className="text-sm text-muted-foreground">Both compression types</div>
+            <div className="text-xs text-gray-700 dark:text-gray-300">Both types</div>
           </div>
         </div>
       </div>

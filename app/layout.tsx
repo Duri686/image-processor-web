@@ -83,10 +83,12 @@ export default function RootLayout({
   children: React.ReactNode
 }>) {
   return (
-    <html lang="en" className={`${spaceGrotesk.variable} ${dmSans.variable} antialiased`} suppressHydrationWarning>
-      <body className="font-sans">
+    <html lang="en" className={`${spaceGrotesk.variable} ${dmSans.variable} antialiased h-full`} suppressHydrationWarning>
+      <body className="font-sans h-full flex flex-col overflow-hidden">
         <ThemeProvider attribute="class" defaultTheme="system" enableSystem disableTransitionOnChange>
-          {children}
+          <main className="flex-1 overflow-hidden">
+            {children}
+          </main>
           <Footer />
           <Toaster richColors closeButton position="top-right" />
         </ThemeProvider>

@@ -4,54 +4,54 @@
 @custom-variant dark (&:is(.dark *));
 
 :root {
-  /* Modern gradient background colors */
-  --gradient-from: #B0DB9C; /* Primary brand color */
-  --gradient-via: #E8F5E8; /* Soft green tint */
-  --gradient-to: #F8FAFC; /* Clean white-gray */
+  /* Modern gradient background colors - neutral tones */
+  --gradient-from: #F5F5F4; /* Warm neutral */
+  --gradient-via: #F8F7F4; /* Soft beige */
+  --gradient-to: #FAFAF9; /* Light cream */
   
   /* Core theme colors */
-  --background: #FEFFFE; /* Pure white with subtle warmth */
-  --foreground: #1F2937; /* Rich dark gray for text */
+  --background: #FAFAF9; /* Warm neutral background */
+  --foreground: #1C1917; /* Rich warm dark for text */
   
   /* Card and surface colors */
-  --card: rgba(255, 255, 255, 0.85); /* Semi-transparent white for glass effect */
-  --card-foreground: #1F2937;
+  --card: rgba(255, 255, 255, 0.90); /* More opaque for better contrast */
+  --card-foreground: #1C1917;
   --popover: #FFFFFF;
-  --popover-foreground: #1F2937;
+  --popover-foreground: #1C1917;
   
-  /* Primary brand system */
-  --primary: #B0DB9C; /* Main brand color */
-  --primary-foreground: #0F172A; /* Dark text on primary */
-  --primary-hover: #9FD086; /* Slightly darker on hover */
-  --primary-active: #8EC470; /* Even darker when active */
+  /* Primary brand system - 浅苔藓绿 */
+  --primary: #B0DB9C; /* 浅苔藓绿主色 */
+  --primary-foreground: #1A2E1A; /* Dark green text on primary */
+  --primary-hover: #A0D189; /* Slightly darker on hover */
+  --primary-active: #90C776; /* Even darker when active */
   
-  /* Secondary color palette */
-  --secondary: #F1F5F9; /* Light gray background */
-  --secondary-foreground: #475569; /* Medium gray text */
+  /* Secondary color palette - warm neutrals */
+  --secondary: #F5F5F4; /* Warm light gray background */
+  --secondary-foreground: #57534E; /* Warm medium gray text */
   
   /* Muted colors for subtle elements */
-  --muted: #F8FAFC; /* Very light background */
-  --muted-foreground: #64748B; /* Muted text */
+  --muted: #F8F7F4; /* Warm very light background */
+  --muted-foreground: #78716C; /* Warm muted text */
   
   /* Accent colors */
-  --accent: #E2E8F0; /* Light accent background */
-  --accent-foreground: #334155; /* Accent text */
+  --accent: #E7E5E4; /* Warm light accent background */
+  --accent-foreground: #44403C; /* Warm accent text */
   
   /* Status colors */
   --destructive: #EF4444; /* Modern red */
   --destructive-foreground: #FFFFFF;
   
-  /* Border and input styling */
-  --border: #E2E8F0; /* Subtle borders */
+  /* Border and input styling - warm neutrals */
+  --border: #E7E5E4; /* Warm subtle borders */
   --input: #FFFFFF; /* Clean input background */
   --ring: rgba(176, 219, 156, 0.3); /* Primary color ring with transparency */
   
-  /* Chart colors - harmonized with brand */
+  /* Chart colors - harmonized with 浅苔藓绿 */
   --chart-1: #B0DB9C;
-  --chart-2: #9FD086;
-  --chart-3: #8EC470;
-  --chart-4: #7DB85A;
-  --chart-5: #6CAC44;
+  --chart-2: #A0D189;
+  --chart-3: #90C776;
+  --chart-4: #80BD63;
+  --chart-5: #70B350;
   
   /* Modern radius system */
   --radius: 0.75rem; /* Larger radius for modern look */

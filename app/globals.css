@@ -20,7 +20,7 @@
   --popover-foreground: #1C1917;
   
   /* Primary brand system - 浅苔藓绿 */
-  --primary: #B0DB9C; /* 浅苔藓绿主色 */
+  --primary: #059669; /* 浅苔藓绿主色 */
   --primary-foreground: #1A2E1A; /* Dark green text on primary */
   --primary-hover: #A0D189; /* Slightly darker on hover */
   --primary-active: #90C776; /* Even darker when active */
@@ -88,7 +88,7 @@
   --popover-foreground: #F1F5F9;
   
   /* Primary brand system - more vibrant and accessible */
-  --primary: #84CC6A; /* Brighter, more accessible green */
+  --primary: #059669; /* Brighter, more accessible green */
   --primary-foreground: #0A0E1A;
   --primary-hover: #6FB84F;
   --primary-active: #5AA434;

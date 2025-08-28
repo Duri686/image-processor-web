@@ -7,6 +7,20 @@ import { Button } from "@/components/ui/button"
 import { cn } from "@/lib/utils"
 import { toast } from "sonner"
 
+// 支持的图片格式 MIME 类型
+const SUPPORTED_IMAGE_TYPES = [
+  'image/jpeg',
+  'image/jpg', 
+  'image/png',
+  'image/webp',
+  'image/avif'
+] as const
+
+// 检查文件是否为支持的图片格式
+const isSupportedImageType = (file: File): boolean => {
+  return SUPPORTED_IMAGE_TYPES.includes(file.type as any)
+}
+
 interface ImageUploaderProps {
   onFilesSelected: (files: File[]) => void
   accept?: string
@@ -19,29 +33,39 @@ export function ImageUploader({ onFilesSelected, accept = "image/*", multiple = 
   const [isUploading, setIsUploading] = useState(false)
 
   const handleFileProcessing = useCallback((files: File[]) => {
-    const imageFiles = files.filter((file) => file.type.startsWith("image/"))
-    const rejectedFiles = files.filter((file) => !file.type.startsWith("image/"))
+    console.log('Files received:', files.map(f => ({ name: f.name, type: f.type, size: f.size })))
+    
+    const supportedImageFiles = files.filter((file) => isSupportedImageType(file))
+    const unsupportedFiles = files.filter((file) => !isSupportedImageType(file))
 
-    if (rejectedFiles.length > 0) {
-      toast.error("Invalid file type", {
-        description: `${rejectedFiles.length} file(s) were rejected. Only image files are supported.`,
+    console.log('Supported files:', supportedImageFiles.length)
+    console.log('Unsupported files:', unsupportedFiles.length)
+
+    if (unsupportedFiles.length > 0) {
+      const fileTypes = [...new Set(unsupportedFiles.map(file => {
+        const ext = file.name.split('.').pop()?.toLowerCase() || '未知'
+        return ext
+      }))]
+      
+      toast.error("不支持的文件类型", {
+        description: `${unsupportedFiles.length} 个文件被拒绝（${fileTypes.join(', ')}），仅支持 JPEG、PNG、WebP、AVIF 格式`,
         duration: 4000,
       })
     }
 
-    if (imageFiles.length > 0) {
+    if (supportedImageFiles.length > 0) {
       setIsUploading(true)
       setTimeout(() => {
-        onFilesSelected(imageFiles)
+        onFilesSelected(supportedImageFiles)
         setIsUploading(false)
-        toast.success("Images added successfully", {
-          description: `${imageFiles.length} image${imageFiles.length > 1 ? 's' : ''} ready for processing`,
+        toast.success("图片添加成功", {
+          description: `${supportedImageFiles.length} 张图片已准备好进行处理`,
           duration: 3000,
         })
       }, 500)
-    } else if (rejectedFiles.length === 0) {
-      toast.error("No files selected", {
-        description: "Please select at least one image file.",
+    } else if (unsupportedFiles.length === 0) {
+      toast.error("未选择文件", {
+        description: "请选择至少一个图片文件",
         duration: 3000,
       })
     }
@@ -76,9 +100,9 @@ export function ImageUploader({ onFilesSelected, accept = "image/*", multiple = 
         className={cn(
           "relative flex min-h-[200px] w-full items-center justify-center rounded-lg border-2 border-dashed transition-colors",
           isDragOver
-            ? "border-blue-400 bg-blue-50"
+            ? "border-primary bg-primary/10"
             : "border-gray-300 bg-gray-50",
-          "hover:border-blue-400 hover:bg-blue-50"
+          "hover:border-primary hover:bg-primary/10"
         )}
         onDragOver={handleDragOver}
         onDragLeave={handleDragLeave}
@@ -93,7 +117,7 @@ export function ImageUploader({ onFilesSelected, accept = "image/*", multiple = 
           className="absolute inset-0 z-10 h-full w-full cursor-pointer opacity-0 disabled:cursor-wait"
         />
         <div className="flex flex-col items-center justify-center p-6 text-center">
-          <UploadCloud className="h-8 w-8 text-gray-400 mb-4" />
+          <UploadCloud className="h-8 w-8 text-primary mb-4" />
           <h3 className="text-lg font-medium text-gray-900 mb-2">
             {isUploading ? "Processing..." : "Upload Images"}
           </h3>

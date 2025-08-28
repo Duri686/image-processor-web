@@ -1,6 +1,21 @@
 "use client"
 
 import { useState, useCallback, useEffect } from "react"
+import { toast } from "sonner"
+
+// 支持的图片格式 MIME 类型
+const SUPPORTED_IMAGE_TYPES = [
+  'image/jpeg',
+  'image/jpg', 
+  'image/png',
+  'image/webp',
+  'image/avif'
+] as const
+
+// 检查文件是否为支持的图片格式
+const isSupportedImageType = (file: File): boolean => {
+  return SUPPORTED_IMAGE_TYPES.includes(file.type as any)
+}
 
 interface UseDragAndDropProps {
   onFilesDropped: (files: File[]) => void
@@ -34,12 +49,22 @@ export const useDragAndDrop = ({ onFilesDropped }: UseDragAndDropProps) => {
     e.stopPropagation()
     setIsDragOver(false)
 
+    console.log('[Global Drag] Drop event triggered')
     const files = Array.from(e.dataTransfer?.files || [])
-    const imageFiles = files.filter(file => file.type.startsWith('image/'))
+    console.log('[Global Drag] Files dropped:', files.map(f => ({ name: f.name, type: f.type, size: f.size })))
     
-    if (imageFiles.length > 0) {
-      onFilesDropped(imageFiles)
+    if (files.length === 0) {
+      console.log('[Global Drag] No files detected')
+      toast.error("没有检测到文件", {
+        description: "请确保拖拽的是有效文件",
+        duration: 3000,
+      })
+      return
     }
+
+    console.log('[Global Drag] Calling onFilesDropped with', files.length, 'files')
+    // 直接传递所有文件给 onFilesDropped，让 ImageUploader 统一处理验证和提示
+    onFilesDropped(files)
   }, [onFilesDropped])
 
   // 添加全局拖拽事件监听

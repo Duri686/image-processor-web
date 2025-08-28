@@ -61,24 +61,24 @@ export const ImageList: React.FC<ImageListProps> = memo(
 
   return (
     <div className="h-full flex flex-col min-h-0">
-      <div className="flex items-center justify-between mb-6 flex-shrink-0">
+            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-6 flex-shrink-0 gap-4 sm:gap-0">
         <div className="flex items-center gap-3">
           {images.length > 0 && (
             <div className="ml-auto">
-              <span className="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-blue-100 text-blue-800">
+              <span className="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-gray-100 text-gray-700 dark:bg-gray-800 dark:text-gray-300">
                 {images.length} {images.length === 1 ? 'image' : 'images'}
               </span>
             </div>
           )}
         </div>
         
-        <div className="flex items-center gap-3">
+        <div className="flex items-center gap-3 w-full sm:w-auto justify-end">
           {processedCount > 0 && (
             <Button
               onClick={handleDownloadAllClick}
-              variant="outline"
+              variant="ghost"
               size="sm"
-              className="h-10 rounded-lg border-blue-200 text-blue-700 hover:bg-blue-50"
+              className="cursor-pointer h-10 rounded-lg text-gray-600 hover:bg-gray-100 hover:text-gray-800 dark:text-gray-400 dark:hover:bg-gray-800 dark:hover:text-gray-200"
               disabled={isDownloadingAll}
             >
               {isDownloadingAll ? (
@@ -93,9 +93,9 @@ export const ImageList: React.FC<ImageListProps> = memo(
           {images.length > 0 && (
             <Button
               onClick={handleClearAllClick}
-              variant="outline"
+              variant="ghost"
               size="sm"
-              className="h-10 rounded-lg border-red-200 text-red-600 hover:bg-red-50"
+              className="cursor-pointer h-10 rounded-lg text-gray-600 hover:bg-gray-100 hover:text-gray-800 dark:text-gray-400 dark:hover:bg-gray-800 dark:hover:text-gray-200"
               disabled={isClearing}
             >
               {isClearing ? (
@@ -112,8 +112,8 @@ export const ImageList: React.FC<ImageListProps> = memo(
       <div className="flex-1 min-h-0 overflow-hidden">
         {images.length === 0 ? (
           <div className="flex flex-col items-center justify-center h-full text-center py-16">
-            <div className="w-20 h-20 bg-gradient-to-br from-blue-100 to-indigo-100 rounded-2xl flex items-center justify-center mb-6">
-              <ImageIcon className="w-10 h-10 text-blue-500" />
+            <div className="w-20 h-20 bg-gradient-to-br from-gray-100 to-gray-200 dark:from-gray-700 dark:to-gray-600 rounded-2xl flex items-center justify-center mb-6">
+              <ImageIcon className="w-10 h-10 text-gray-500 dark:text-gray-300" />
             </div>
             <h3 className="text-xl font-semibold text-gray-900 mb-3">Ready to Process</h3>
             <p className="text-gray-600 max-w-sm">
@@ -129,9 +129,9 @@ export const ImageList: React.FC<ImageListProps> = memo(
                 return (
                   <div
                     key={image.id}
-                    className="group relative bg-white/60 backdrop-blur-sm rounded-xl border border-white/40 p-4 hover:bg-white/80 hover:shadow-lg hover:shadow-blue-500/10 transition-all duration-300"
+                    className="group relative bg-white/60 backdrop-blur-sm rounded-xl border border-[#E5E7EB] p-4  hover:border-primary hover:bg-[#ECFDF5] hover:shadow transition-all duration-300"
                   >
-                    <div className="flex items-center gap-4">
+                                        <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:gap-4">
                       <div className="relative w-14 h-14 rounded-xl overflow-hidden bg-gradient-to-br from-gray-100 to-gray-200 flex-shrink-0">
                         <img
                           src={URL.createObjectURL(image.file)}
@@ -145,13 +145,13 @@ export const ImageList: React.FC<ImageListProps> = memo(
                         )}
                       </div>
 
-                      <div className="flex-1 min-w-0">
+                                            <div className="min-w-0 w-full sm:flex-1">
                         <p className="font-semibold text-gray-900 truncate mb-2">
                           {image.file.name}
                         </p>
                         <div className="flex items-center gap-3 flex-wrap">
                           {status === 'completed' && (
-                            <Badge className="bg-emerald-100 text-emerald-800 border-emerald-200 font-medium">
+                            <Badge className="bg-[#ECFDF5] text-primary border-emerald-200 font-medium">
                               <CheckCircle2 className="w-3 h-3 mr-1" />
                               Completed
                             </Badge>
@@ -179,7 +179,7 @@ export const ImageList: React.FC<ImageListProps> = memo(
                                   const originalSize = image.file.size
                                   const processedSize = image.processedImage.blob.size
                                   const change = originalSize > 0 ? ((processedSize - originalSize) / originalSize) * 100 : 0
-                                  const changeColor = change > 0 ? "text-red-500" : "text-emerald-600"
+                                  const changeColor = change > 0 ? "text-red-500" : "text-primary"
                                   const changePrefix = change > 0 ? "+" : ""
 
                                   return (
@@ -198,7 +198,7 @@ export const ImageList: React.FC<ImageListProps> = memo(
                         <Button
                           onClick={() => handleDownloadClick(image)}
                           size="sm"
-                          className="h-10 px-4 rounded-lg bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white shadow-lg shadow-blue-500/25 transition-all duration-200"
+                                                    className="cursor-pointer h-10 px-4 rounded-lg bg-primary hover:bg-primary/80 text-white hover:text-white border-0 shadow-sm hover:shadow-md dark:bg-primary dark:hover:bg-primary/80 transition-all duration-200 w-full sm:w-auto mt-3 sm:mt-0"
                           disabled={!!downloadingId}
                         >
                           {downloadingId === image.id ? (

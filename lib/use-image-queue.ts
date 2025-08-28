@@ -5,6 +5,20 @@ import { processImage, downloadImage, type ProcessedImage } from './image-proces
 import { createZip, type ExportItem } from './download-manager';
 import type { ImageFormat } from '@/components/format-selector';
 
+// 支持的图片格式 MIME 类型
+const SUPPORTED_IMAGE_TYPES = [
+  'image/jpeg',
+  'image/jpg', 
+  'image/png',
+  'image/webp',
+  'image/avif'
+] as const;
+
+// 检查文件是否为支持的图片格式
+const isSupportedImageType = (file: File): boolean => {
+  return SUPPORTED_IMAGE_TYPES.includes(file.type as any);
+};
+
 export interface ImageFile {
   id: string;
   file: File;
@@ -24,12 +38,59 @@ export const useImageQueue = ({ selectedFormat, quality }: UseImageQueueProps) =
   const [processingProgress, setProcessingProgress] = useState<{ fileName: string; progress: number } | null>(null);
 
   const handleFilesSelected = useCallback(async (files: File[]) => {
-    const newImages: ImageFile[] = files.map((file, index) => ({
-      id: `${file.name}-${file.size}-${Date.now()}-${index}`,
-      file,
-      status: 'queued',
-    }));
-    setImages((prevImages: ImageFile[]) => [...newImages, ...prevImages]);
+    console.log('[useImageQueue] handleFilesSelected called with:', files.map(f => ({ name: f.name, type: f.type, size: f.size })));
+    
+    const supportedFiles = files.filter(file => isSupportedImageType(file));
+    const unsupportedFiles = files.filter(file => !isSupportedImageType(file));
+    
+    console.log('[useImageQueue] Supported files:', supportedFiles.length);
+    console.log('[useImageQueue] Unsupported files:', unsupportedFiles.length);
+    
+    // 处理不支持的文件提醒
+    if (unsupportedFiles.length > 0) {
+      const fileTypes = [...new Set(unsupportedFiles.map(file => {
+        const ext = file.name.split('.').pop()?.toLowerCase() || '未知';
+        return ext;
+      }))];
+      
+      // 动态导入 toast 来避免服务端渲染问题
+      const { toast } = await import('sonner');
+      toast.error("不支持的文件类型", {
+        description: `${unsupportedFiles.length} 个文件被拒绝（${fileTypes.join(', ')}），仅支持 JPEG、PNG、WebP、AVIF 格式`,
+        duration: 4000,
+      });
+    }
+    
+    // 只有当有支持的文件时才添加到队列
+    if (supportedFiles.length > 0) {
+      const newImages: ImageFile[] = supportedFiles.map((file, index) => ({
+        id: `${file.name}-${file.size}-${Date.now()}-${index}`,
+        file,
+        status: 'queued',
+      }));
+      setImages((prevImages: ImageFile[]) => [...newImages, ...prevImages]);
+      
+      // 成功提示
+      const { toast } = await import('sonner');
+      if (unsupportedFiles.length > 0) {
+        toast.success(`已添加 ${supportedFiles.length} 张图片`, {
+          description: `已过滤 ${unsupportedFiles.length} 个不支持的文件`,
+          duration: 3000,
+        });
+      } else {
+        toast.success(`已添加 ${supportedFiles.length} 张图片`, {
+          description: "图片已准备好进行转换",
+          duration: 3000,
+        });
+      }
+    } else if (files.length > 0 && unsupportedFiles.length === files.length) {
+      // 全部都是不支持的文件
+      const { toast } = await import('sonner');
+      toast.error("未找到支持的图片文件", {
+        description: "请拖拽 JPEG、PNG、WebP、AVIF 格式的图片文件",
+        duration: 4000,
+      });
+    }
   }, []);
 
   useEffect(() => {

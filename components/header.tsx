@@ -92,8 +92,8 @@ export function Header({
     <header className="sticky top-0 z-50 bg-white/80 dark:bg-gray-900/80 backdrop-blur-md supports-[backdrop-filter]:bg-white/80 border-b border-white/20 dark:border-gray-800/50 shadow-lg shadow-blue-500/5">
       <div className={`container mx-auto px-4 sm:px-6 ${heightClass} flex items-center justify-between`}>
         <div className="flex items-center gap-4">
-          <div className={`${iconPadClass} rounded-xl bg-gradient-to-r from-blue-500/10 to-indigo-500/10 border border-blue-200/30 dark:border-blue-800/30 shadow-sm`}>
-            <ImageIcon className="w-6 h-6 text-blue-600 dark:text-blue-400" />
+          <div className={`${iconPadClass} rounded-xl bg-gray-100/80 dark:bg-gray-800/80 border border-gray-200/50 dark:border-gray-700/50 shadow-sm`}>
+            <ImageIcon className="w-6 h-6 text-gray-600 dark:text-gray-300" />
           </div>
           <div>
             <h1 className={`${titleClass} font-bold bg-gradient-to-r from-gray-900 to-gray-700 dark:from-gray-100 dark:to-gray-300 bg-clip-text text-transparent`}>{title}</h1>

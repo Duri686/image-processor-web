@@ -84,9 +84,9 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" className={`${spaceGrotesk.variable} ${dmSans.variable} antialiased h-full`} suppressHydrationWarning>
-      <body className="font-sans h-full flex flex-col overflow-hidden">
+            <body className="font-sans min-h-full flex flex-col">
         <ThemeProvider attribute="class" defaultTheme="system" enableSystem disableTransitionOnChange>
-          <main className="flex-1 overflow-hidden">
+                    <main className="flex-1 xl:overflow-hidden">
             {children}
           </main>
           <Footer />

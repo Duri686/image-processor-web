@@ -35,60 +35,15 @@ export function ImageUploader({
   className,
 }: ImageUploaderProps) {
   const [isDragOver, setIsDragOver] = useState(false);
-  const [isUploading, setIsUploading] = useState(false);
 
-  const handleFileProcessing = useCallback(
+  // The isUploading state can be removed if it's not used for UI feedback anymore,
+  // or it can be driven by a prop from the parent component that knows the actual processing state.
+  const [isUploading, setIsUploading] = useState(false); 
+
+  const handleFiles = useCallback(
     (files: File[]) => {
-      console.log(
-        'Files received:',
-        files.map((f) => ({ name: f.name, type: f.type, size: f.size })),
-      );
-
-      const supportedImageFiles = files.filter((file) =>
-        isSupportedImageType(file),
-      );
-      const unsupportedFiles = files.filter(
-        (file) => !isSupportedImageType(file),
-      );
-
-      console.log('Supported files:', supportedImageFiles.length);
-      console.log('Unsupported files:', unsupportedFiles.length);
-
-      if (unsupportedFiles.length > 0) {
-        const fileTypes = [
-          ...new Set(
-            unsupportedFiles.map((file) => {
-              const ext = file.name.split('.').pop()?.toLowerCase() || '未知';
-              return ext;
-            }),
-          ),
-        ];
-
-        toast.error('不支持的文件类型', {
-          description: `${
-            unsupportedFiles.length
-          } 个文件被拒绝（${fileTypes.join(
-            ', ',
-          )}），仅支持 JPEG、PNG、WebP、AVIF 格式`,
-          duration: 4000,
-        });
-      }
-
-      if (supportedImageFiles.length > 0) {
-        setIsUploading(true);
-        setTimeout(() => {
-          onFilesSelected(supportedImageFiles);
-          setIsUploading(false);
-          toast.success('图片添加成功', {
-            description: `${supportedImageFiles.length} 张图片已准备好进行处理`,
-            duration: 3000,
-          });
-        }, 500);
-      } else if (unsupportedFiles.length === 0) {
-        toast.error('未选择文件', {
-          description: '请选择至少一个图片文件',
-          duration: 3000,
-        });
+      if (files.length > 0) {
+        onFilesSelected(files);
       }
     },
     [onFilesSelected],
@@ -109,18 +64,19 @@ export function ImageUploader({
       e.preventDefault();
       setIsDragOver(false);
       const files = Array.from(e.dataTransfer.files);
-      handleFileProcessing(files);
+      handleFiles(files);
     },
-    [handleFileProcessing],
+    [handleFiles],
   );
 
   const handleFileSelect = useCallback(
     (e: React.ChangeEvent<HTMLInputElement>) => {
       const files = Array.from(e.target.files || []);
-      handleFileProcessing(files);
+      handleFiles(files);
+      // Reset the input value to allow selecting the same file again
       e.target.value = '';
     },
-    [handleFileProcessing],
+    [handleFiles],
   );
 
   return (

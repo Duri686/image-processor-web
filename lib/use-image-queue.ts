@@ -38,30 +38,10 @@ export const useImageQueue = ({ selectedFormat, quality }: UseImageQueueProps) =
   const [processingProgress, setProcessingProgress] = useState<{ fileName: string; progress: number } | null>(null);
 
   const handleFilesSelected = useCallback(async (files: File[]) => {
-    console.log('[useImageQueue] handleFilesSelected called with:', files.map(f => ({ name: f.name, type: f.type, size: f.size })));
-    
-    const supportedFiles = files.filter(file => isSupportedImageType(file));
+    const { toast } = await import('sonner');
+    const supportedFiles = files.filter(isSupportedImageType);
     const unsupportedFiles = files.filter(file => !isSupportedImageType(file));
-    
-    console.log('[useImageQueue] Supported files:', supportedFiles.length);
-    console.log('[useImageQueue] Unsupported files:', unsupportedFiles.length);
-    
-    // 处理不支持的文件提醒
-    if (unsupportedFiles.length > 0) {
-      const fileTypes = [...new Set(unsupportedFiles.map(file => {
-        const ext = file.name.split('.').pop()?.toLowerCase() || '未知';
-        return ext;
-      }))];
-      
-      // 动态导入 toast 来避免服务端渲染问题
-      const { toast } = await import('sonner');
-      toast.error("不支持的文件类型", {
-        description: `${unsupportedFiles.length} 个文件被拒绝（${fileTypes.join(', ')}），仅支持 JPEG、PNG、WebP、AVIF 格式`,
-        duration: 4000,
-      });
-    }
-    
-    // 只有当有支持的文件时才添加到队列
+
     if (supportedFiles.length > 0) {
       const newImages: ImageFile[] = supportedFiles.map((file, index) => ({
         id: `${file.name}-${file.size}-${Date.now()}-${index}`,
@@ -69,26 +49,31 @@ export const useImageQueue = ({ selectedFormat, quality }: UseImageQueueProps) =
         status: 'queued',
       }));
       setImages((prevImages: ImageFile[]) => [...newImages, ...prevImages]);
-      
-      // 成功提示
-      const { toast } = await import('sonner');
+
       if (unsupportedFiles.length > 0) {
-        toast.success(`已添加 ${supportedFiles.length} 张图片`, {
-          description: `已过滤 ${unsupportedFiles.length} 个不支持的文件`,
-          duration: 3000,
+        const unsupportedFileTypes = [
+          ...new Set(unsupportedFiles.map(f => f.name.split('.').pop()?.toLowerCase() || 'unknown')),
+        ].join(', ');
+        toast.info(`${supportedFiles.length} images added`, {
+          description: `${unsupportedFiles.length} unsupported files were ignored (${unsupportedFileTypes}).`,
+          duration: 4000,
         });
       } else {
-        toast.success(`已添加 ${supportedFiles.length} 张图片`, {
-          description: "图片已准备好进行转换",
+        toast.success(`${supportedFiles.length} images added successfully`, {
+          description: 'Ready for processing.',
           duration: 3000,
         });
       }
-    } else if (files.length > 0 && unsupportedFiles.length === files.length) {
-      // 全部都是不支持的文件
-      const { toast } = await import('sonner');
-      toast.error("未找到支持的图片文件", {
-        description: "请拖拽 JPEG、PNG、WebP、AVIF 格式的图片文件",
+    } else if (unsupportedFiles.length > 0) {
+      toast.error('Unsupported file types', {
+        description: 'Please select valid image files (JPEG, PNG, WebP).',
         duration: 4000,
+      });
+    } else {
+      // This case might not be reachable if the uploader prevents empty selections, but it's good for robustness.
+      toast.error('No files selected', {
+        description: 'Please select at least one image file.',
+        duration: 3000,
       });
     }
   }, []);

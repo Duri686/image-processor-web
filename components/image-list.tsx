@@ -13,6 +13,7 @@ import {
   ImageIcon,
 } from 'lucide-react';
 import type { ImageFile } from '@/lib/use-image-queue';
+import { ImageFormat } from './format-selector';
 
 export interface ProcessingProgress {
   fileName: string;
@@ -23,9 +24,10 @@ interface ImageListProps {
   images: ImageFile[];
   isProcessing: boolean;
   processingProgress: ProcessingProgress | null;
-  onDownload: (image: ImageFile) => void;
+  onDownload: (id: string) => void;
   onDownloadAllCompleted: () => void;
   onClearAll: () => void;
+  selectedFormat: ImageFormat;
 }
 
 export const ImageList: React.FC<ImageListProps> = memo(
@@ -36,7 +38,8 @@ export const ImageList: React.FC<ImageListProps> = memo(
     onDownload,
     onDownloadAllCompleted,
     onClearAll,
-  }) => {
+    selectedFormat,
+  }: ImageListProps) => {
     const [downloadingId, setDownloadingId] = React.useState<string | null>(
       null,
     );
@@ -44,10 +47,10 @@ export const ImageList: React.FC<ImageListProps> = memo(
     const [isDownloadingAll, setIsDownloadingAll] = React.useState(false);
     const processedCount = images.filter((img) => img.processedImage).length;
 
-    const handleDownloadClick = (image: ImageFile) => {
+    const handleDownloadClick = (id: string) => {
       if (downloadingId) return;
-      onDownload(image);
-      setDownloadingId(image.id);
+      onDownload(id);
+      setDownloadingId(id);
       setTimeout(() => setDownloadingId(null), 1500);
     };
 
@@ -86,7 +89,7 @@ export const ImageList: React.FC<ImageListProps> = memo(
           <div className="flex items-center gap-3">
             {images.length > 0 && (
               <div className="ml-auto">
-                <span className="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-gray-100 text-gray-700 dark:bg-gray-800 dark:text-gray-300">
+                <span className="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-muted text-muted-foreground">
                   {images.length} {images.length === 1 ? 'image' : 'images'}
                 </span>
               </div>
@@ -99,7 +102,7 @@ export const ImageList: React.FC<ImageListProps> = memo(
                 onClick={handleDownloadAllClick}
                 variant="ghost"
                 size="sm"
-                className="cursor-pointer h-10 rounded-lg text-gray-600 hover:bg-gray-100 hover:text-gray-800 dark:text-gray-400 dark:hover:bg-gray-800 dark:hover:text-gray-200"
+                className="cursor-pointer h-10 rounded-md text-muted-foreground hover:bg-accent hover:text-accent-foreground"
                 disabled={isDownloadingAll}
               >
                 {isDownloadingAll ? (
@@ -116,7 +119,7 @@ export const ImageList: React.FC<ImageListProps> = memo(
                 onClick={handleClearAllClick}
                 variant="ghost"
                 size="sm"
-                className="cursor-pointer h-10 rounded-lg text-gray-600 hover:bg-gray-100 hover:text-gray-800 dark:text-gray-400 dark:hover:bg-gray-800 dark:hover:text-gray-200"
+                className="cursor-pointer h-10 rounded-md text-muted-foreground hover:bg-accent hover:text-accent-foreground"
                 disabled={isClearing}
               >
                 {isClearing ? (
@@ -133,13 +136,13 @@ export const ImageList: React.FC<ImageListProps> = memo(
         <div className="flex-1 min-h-0 overflow-hidden">
           {images.length === 0 ? (
             <div className="flex flex-col items-center justify-center h-full text-center py-16">
-              <div className="w-20 h-20 bg-gradient-to-br from-gray-100 to-gray-200 dark:from-gray-700 dark:to-gray-600 rounded-2xl flex items-center justify-center mb-6">
-                <ImageIcon className="w-10 h-10 text-gray-500 dark:text-gray-300" />
+              <div className="w-20 h-20 bg-accent rounded-md flex items-center justify-center mb-6">
+                <ImageIcon className="w-10 h-10 text-muted-foreground" />
               </div>
-              <h3 className="text-xl font-semibold text-gray-900 mb-3">
+              <h3 className="text-xl font-semibold text-foreground mb-3">
                 Ready to Process
               </h3>
-              <p className="text-gray-600 max-w-sm">
+              <p className="text-muted-foreground max-w-sm">
                 Upload your images to start converting them to your preferred
                 format with optimized quality.
               </p>
@@ -153,52 +156,55 @@ export const ImageList: React.FC<ImageListProps> = memo(
                   return (
                     <div
                       key={image.id}
-                      className="group relative bg-white/60 backdrop-blur-sm rounded-xl border border-[#E5E7EB] p-4  hover:border-primary hover:bg-[#ECFDF5] hover:shadow transition-all duration-300"
+                      className="group relative bg-card/60 backdrop-blur-sm rounded-xl border p-4 hover:border-primary hover:bg-primary/10 hover:shadow transition-all duration-300"
                     >
                       <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:gap-4">
-                        <div className="relative w-14 h-14 rounded-xl overflow-hidden bg-gradient-to-br from-gray-100 to-gray-200 flex-shrink-0">
+                        <div className="relative w-14 h-14 rounded-md overflow-hidden bg-accent flex-shrink-0">
                           <img
                             src={URL.createObjectURL(image.file)}
                             alt={image.file.name}
                             className="w-full h-full object-cover"
                           />
                           {status === 'processing' && (
-                            <div className="absolute inset-0 bg-blue-500/20 flex items-center justify-center">
-                              <Loader2 className="w-6 h-6 text-blue-600 animate-spin" />
+                            <div className="absolute inset-0 bg-accent/20 flex items-center justify-center">
+                              <Loader2 className="w-6 h-6 text-primary animate-spin" />
                             </div>
                           )}
                         </div>
 
                         <div className="min-w-0 w-full sm:flex-1">
-                          <p className="font-semibold text-gray-900 truncate mb-2">
+                          <p className="font-semibold text-foreground truncate mb-2">
                             {image.file.name}
                           </p>
                           <div className="flex items-center gap-3 flex-wrap">
                             {status === 'completed' && (
-                              <Badge className="bg-[#ECFDF5] text-primary border-emerald-200 font-medium">
+                              <Badge
+                                variant="success"
+                                className="font-medium uppercase bg-accent"
+                              >
                                 <CheckCircle2 className="w-3 h-3 mr-1" />
-                                Completed
+                                {image.convertedFormat || selectedFormat}
                               </Badge>
                             )}
                             {status === 'processing' && (
-                              <Badge className="bg-blue-100 text-blue-800 border-blue-200 font-medium">
+                              <Badge variant="info" className="font-medium">
                                 <Loader2 className="w-3 h-3 mr-1 animate-spin" />
                                 Processing
                               </Badge>
                             )}
                             {status === 'queued' && (
-                              <Badge className="bg-amber-100 text-amber-800 border-amber-200 font-medium">
+                              <Badge variant="warning" className="font-medium">
                                 <Clock className="w-3 h-3 mr-1" />
                                 Queued
                               </Badge>
                             )}
 
-                            <div className="text-sm text-gray-600 font-medium">
+                            <div className="text-sm text-muted-foreground font-medium">
                               {formatBytes(image.file.size)}
                               {image.processedImage &&
                                 image.processedImage.blob && (
                                   <>
-                                    <span className="text-gray-400 mx-2">
+                                    <span className="text-muted-foreground/50 mx-2">
                                       →
                                     </span>
                                     {formatBytes(
@@ -216,7 +222,7 @@ export const ImageList: React.FC<ImageListProps> = memo(
                                           : 0;
                                       const changeColor =
                                         change > 0
-                                          ? 'text-red-500'
+                                          ? 'text-destructive'
                                           : 'text-primary';
                                       const changePrefix =
                                         change > 0 ? '+' : '';
@@ -238,9 +244,9 @@ export const ImageList: React.FC<ImageListProps> = memo(
 
                         {status === 'completed' && (
                           <Button
-                            onClick={() => handleDownloadClick(image)}
+                            onClick={() => handleDownloadClick(image.id)}
                             size="sm"
-                            className="cursor-pointer h-10 px-4 rounded-lg bg-primary hover:bg-primary/80 text-white hover:text-white border-0 shadow-sm hover:shadow-md dark:bg-primary dark:hover:bg-primary/80 transition-all duration-200 w-full sm:w-auto mt-3 sm:mt-0"
+                            className="cursor-pointer h-10 px-4 rounded-md bg-primary hover:bg-primary/90 text-primary-foreground border-0 shadow-sm hover:shadow-md transition-all duration-200 w-full sm:w-auto mt-3 sm:mt-0"
                             disabled={!!downloadingId}
                           >
                             {downloadingId === image.id ? (

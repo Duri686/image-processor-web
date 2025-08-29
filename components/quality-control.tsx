@@ -28,10 +28,10 @@ export const QualityControl = memo<QualityControlProps>(({
   if (selectedFormat === 'png') {
     return (
       <div className="space-y-3">
-        <label className="text-sm font-medium text-gray-700">Quality</label>
-        <Alert className="bg-blue-50 border-blue-200">
-          <Info className="h-4 w-4 text-blue-600" />
-          <AlertDescription className="text-blue-800">
+        <label className="text-sm font-medium text-card-foreground/80">Quality</label>
+        <Alert variant="info">
+          <Info className="h-4 w-4" />
+          <AlertDescription>
             PNG format uses lossless compression. Quality setting is not applicable.
           </AlertDescription>
         </Alert>
@@ -42,8 +42,8 @@ export const QualityControl = memo<QualityControlProps>(({
   return (
     <div className="space-y-3">
       <div className="flex items-center justify-between">
-        <label className="text-sm font-medium text-gray-700">Quality</label>
-        <span className="text-sm font-medium text-gray-900">
+        <label className="text-sm font-medium text-card-foreground/80">Quality</label>
+        <span className="text-sm font-medium text-card-foreground">
           {getQualityLabel(quality)} ({quality}%)
         </span>
       </div>
@@ -58,7 +58,7 @@ export const QualityControl = memo<QualityControlProps>(({
           className="w-full"
         />
         
-        <div className="flex justify-between text-xs text-gray-500">
+        <div className="flex justify-between text-xs text-muted-foreground">
           <span>Smaller File</span>
           <span>Balanced</span>
           <span>Higher Quality</span>

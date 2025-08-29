@@ -25,6 +25,7 @@ export interface ImageFile {
   status: 'queued' | 'processing' | 'completed' | 'failed';
   processedImage?: ProcessedImage;
   error?: string;
+  convertedFormat?: ImageFormat;
 }
 
 interface UseImageQueueProps {
@@ -93,7 +94,7 @@ export const useImageQueue = ({ selectedFormat, quality }: UseImageQueueProps) =
             format: selectedFormat,
             quality: quality / 100,
           });
-          setImages((prev: ImageFile[]) => prev.map((i: ImageFile) => i.id === image.id ? { ...i, status: 'completed', processedImage: result } : i));
+          setImages((prev: ImageFile[]) => prev.map((i: ImageFile) => i.id === image.id ? { ...i, status: 'completed', processedImage: result, convertedFormat: selectedFormat } : i));
         } catch (error) {
           console.error(`Failed to process ${image.file.name}:`, error);
           setImages((prev: ImageFile[]) => prev.map((i: ImageFile) => i.id === image.id ? { ...i, status: 'failed', error: error instanceof Error ? error.message : 'Unknown error' } : i));
@@ -111,7 +112,7 @@ export const useImageQueue = ({ selectedFormat, quality }: UseImageQueueProps) =
     // When quality or format changes, reset processed images to re-queue them
     if (images.some((img: ImageFile) => img.status === 'completed')) {
       setImages((currentImages: ImageFile[]) =>
-        currentImages.map((img: ImageFile) => ({ ...img, status: 'queued', processedImage: undefined }))
+        currentImages.map((img: ImageFile) => ({ ...img, status: 'queued', processedImage: undefined, convertedFormat: undefined }))
       );
     }
   }, [quality, selectedFormat]);
@@ -120,10 +121,12 @@ export const useImageQueue = ({ selectedFormat, quality }: UseImageQueueProps) =
     setImages([]);
   }, []);
 
-  const handleDownload = useCallback((image: ImageFile) => {
-    if (image.status !== 'completed' || !image.processedImage) return;
-    downloadImage(image.processedImage.blob, image.processedImage.filename);
-  }, []);
+  const handleDownload = useCallback((id: string) => {
+    const image = images.find((img: ImageFile) => img.id === id);
+    if (image && image.status === 'completed' && image.processedImage) {
+      downloadImage(image.processedImage.blob, image.processedImage.filename);
+    }
+  }, [images]);
 
   const handleDownloadAllCompleted = useCallback(async () => {
     const completedImages = images.filter(

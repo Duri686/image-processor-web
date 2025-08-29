@@ -80,13 +80,13 @@ export function ImageUploader({
   );
 
   return (
-    <div className="bg-white rounded-lg border border-gray-200 p-6">
+    <div className="bg-card rounded-lg border p-6">
       <div
         className={cn(
           'relative flex min-h-[200px] w-full items-center justify-center rounded-lg border-2 border-dashed transition-colors',
           isDragOver
             ? 'border-primary bg-primary/10'
-            : 'border-gray-300 bg-gray-50',
+            : 'border-input bg-accent',
           'hover:border-primary hover:bg-primary/10',
         )}
         onDragOver={handleDragOver}
@@ -103,10 +103,10 @@ export function ImageUploader({
         />
         <div className="flex flex-col items-center justify-center p-6 text-center">
           <UploadCloud className="h-8 w-8 text-primary mb-4" />
-          <h3 className="text-lg font-medium text-gray-900 mb-2">
+          <h3 className="text-lg font-medium text-foreground mb-2">
             {isUploading ? 'Processing...' : 'Upload Images'}
           </h3>
-          <p className="text-sm text-gray-600 mb-4">
+          <p className="text-sm text-muted-foreground mb-4">
             {isUploading
               ? 'Your images are being prepared...'
               : 'Drag and drop your images here'}
@@ -118,7 +118,7 @@ export function ImageUploader({
           )}
         </div>
       </div>
-      <p className="text-xs text-gray-500 mt-3 text-center">
+      <p className="text-xs text-muted-foreground mt-3 text-center">
         Supported formats: JPEG, PNG, WebP, AVIF • Max 10MB per file
       </p>
     </div>

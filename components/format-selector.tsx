@@ -21,12 +21,12 @@ interface FormatSelectorProps {
 export const FormatSelector = memo<FormatSelectorProps>(({ selectedFormat, onFormatChange }) => {
   return (
     <div className="space-y-3">
-      <label className="text-sm font-medium text-gray-700">Target Format</label>
-      
+      <label className="text-sm font-medium text-muted-foreground">Target Format</label>
+
       {/* Mobile: Select */}
       <div className="md:hidden">
         <Select value={selectedFormat} onValueChange={onFormatChange}>
-          <SelectTrigger className="h-12 rounded-lg bg-white border-gray-300">
+          <SelectTrigger className="h-12 rounded-lg bg-card border-border">
             <SelectValue />
           </SelectTrigger>
           <SelectContent>
@@ -42,12 +42,12 @@ export const FormatSelector = memo<FormatSelectorProps>(({ selectedFormat, onFor
       {/* Desktop: Tabs */}
       <div className="hidden md:block">
         <Tabs value={selectedFormat} onValueChange={onFormatChange}>
-          <TabsList className="grid w-full grid-cols-4 bg-gray-100 rounded-lg p-1">
+          <TabsList className="grid w-full grid-cols-4 bg-muted rounded-lg p-1">
             {FORMATS.map((format) => (
-              <TabsTrigger 
-                key={format.id} 
+              <TabsTrigger
+                key={format.id}
                 value={format.id}
-                className="rounded-md py-2 px-4 data-[state=active]:bg-white data-[state=active]:shadow-sm"
+                className="rounded-md py-2 px-4 data-[state=active]:bg-background data-[state=active]:shadow-sm"
               >
                 {format.label}
               </TabsTrigger>

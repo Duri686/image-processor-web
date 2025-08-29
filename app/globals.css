@@ -1,7 +1,6 @@
 @import "tailwindcss";
 @import "tw-animate-css";
 
-@custom-variant dark (&:is(.dark *));
 
 :root {
   /* Modern gradient background colors - neutral tones */
@@ -21,7 +20,7 @@
   
   /* Primary brand system - 浅苔藓绿 */
   --primary: #059669; /* 浅苔藓绿主色 */
-  --primary-foreground: #1A2E1A; /* Dark green text on primary */
+  --primary-foreground: #fff; /* Dark green text on primary */
   --primary-hover: #A0D189; /* Slightly darker on hover */
   --primary-active: #90C776; /* Even darker when active */
   
@@ -34,7 +33,7 @@
   --muted-foreground: #78716C; /* Warm muted text */
   
   /* Accent colors */
-  --accent: #E7E5E4; /* Warm light accent background */
+  --accent: #F9FAFB; /* Warm light accent background */
   --accent-foreground: #44403C; /* Warm accent text */
   
   /* Status colors */
@@ -43,7 +42,7 @@
   
   /* Border and input styling - warm neutrals */
   --border: #E7E5E4; /* Warm subtle borders */
-  --input: #FFFFFF; /* Clean input background */
+  --input: #D1D5DC; /* Clean input background */
   --ring: rgba(176, 219, 156, 0.3); /* Primary color ring with transparency */
   
   /* Chart colors - harmonized with 浅苔藓绿 */
@@ -72,64 +71,64 @@
 }
 
 .dark {
-  /* Modern dark mode gradient colors */
-  --gradient-from: #1E293B; /* Sophisticated dark slate */
-  --gradient-via: #0F172A; /* Deep navy */
-  --gradient-to: #020617; /* Rich black */
-  
-  /* Core dark theme colors - warmer and more sophisticated */
-  --background: #0A0E1A; /* Rich dark with subtle warmth */
-  --foreground: #F1F5F9; /* Soft white with slight blue tint */
-  
-  /* Card and surface colors - better contrast and depth */
-  --card: rgba(15, 23, 42, 0.95); /* More opaque for better readability */
-  --card-foreground: #F1F5F9;
-  --popover: #1E293B;
-  --popover-foreground: #F1F5F9;
-  
-  /* Primary brand system - more vibrant and accessible */
-  --primary: #059669; /* Brighter, more accessible green */
-  --primary-foreground: #0A0E1A;
+  /* Modern dark mode gradient colors - Softer Palette */
+  --gradient-from: #1F2937; /* From dark gray */
+  --gradient-via: #111827;  /* To very dark gray */
+  --gradient-to: #000000;    /* To black */
+
+  /* Core dark theme colors - Softer & Modern */
+  --background: #111827; /* Very dark gray, softer than black */
+  --foreground: #E5E7EB; /* Light gray for text, not pure white */
+
+  /* Card and surface colors - Clearer Hierarchy */
+  --card: #1F2937; /* Dark gray, distinct from background */
+  --card-foreground: #E5E7EB;
+  --popover: #1F2937;
+  --popover-foreground: #E5E7EB;
+
+  /* Primary brand system - Unchanged as requested */
+  --primary: #4CAF50;
+  --primary-foreground: #FFFFFF; /* White text for better contrast on green */
   --primary-hover: #6FB84F;
   --primary-active: #5AA434;
-  
-  /* Secondary colors - warmer grays */
-  --secondary: #1E293B;
-  --secondary-foreground: #E2E8F0;
-  
-  /* Muted colors - better hierarchy */
-  --muted: #1A202C;
-  --muted-foreground: #A0AEC0;
-  
-  /* Accent colors - more sophisticated */
-  --accent: #2D3748;
-  --accent-foreground: #E2E8F0;
-  
-  /* Status colors - modern and accessible */
-  --destructive: #F56565;
-  --destructive-foreground: #FFFFFF;
-  
-  /* Border and input styling - subtle but defined */
-  --border: #2D3748;
-  --input: #1A202C;
-  --ring: rgba(132, 204, 106, 0.4);
-  
+
+  /* Secondary colors */
+  --secondary: #374151; /* Medium gray */
+  --secondary-foreground: #E5E7EB;
+
+  /* Muted colors - for less important text */
+  --muted: #374151;
+  --muted-foreground: #9CA3AF; /* Lighter gray for muted text */
+
+  /* Accent colors */
+  --accent: #1F2937;
+  --accent-foreground: #F9FAFB;
+
+  /* Status colors */
+  --destructive: #EF4444; /* A slightly softer red */
+  --destructive-foreground: #F9FAFB;
+
+  /* Border and input styling */
+  --border: #374151; /* Consistent border color */
+  --input: #111827;
+  --ring: rgba(76, 175, 80, 0.5);
+
   /* Chart colors - harmonized palette */
   --chart-1: #84CC6A;
   --chart-2: #6FB84F;
   --chart-3: #5AA434;
   --chart-4: #459019;
   --chart-5: #2F7C00;
-  
+
   /* Sidebar colors - consistent with new palette */
-  --sidebar: rgba(10, 14, 26, 0.95);
-  --sidebar-foreground: #F1F5F9;
+  --sidebar: #1F2937;
+  --sidebar-foreground: #E5E7EB;
   --sidebar-primary: #84CC6A;
-  --sidebar-primary-foreground: #0A0E1A;
-  --sidebar-accent: #1E293B;
-  --sidebar-accent-foreground: #E2E8F0;
-  --sidebar-border: #2D3748;
-  --sidebar-ring: rgba(132, 204, 106, 0.4);
+  --sidebar-primary-foreground: #111827;
+  --sidebar-accent: #374151;
+  --sidebar-accent-foreground: #F9FAFB;
+  --sidebar-border: #374151;
+  --sidebar-ring: rgba(76, 175, 80, 0.5);
 }
 
 @theme inline {

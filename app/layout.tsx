@@ -19,19 +19,19 @@ const dmSans = DM_Sans({
 })
 
 export const metadata: Metadata = {
-  title: "Image Optimizer - Professional Image Processing Tool",
+  title: "Image Processor - Compress & Convert Images Online",
   description:
-    "Compress, convert, and optimize images directly in your browser. Generate favicons and OG images with ease.",
+    "A modern, client-side image processing tool for fast compression and format conversion (WebP, JPEG, PNG). All operations are done in your browser, ensuring privacy and speed. Supports batch processing.",
   metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL ?? "http://localhost:3000"),
   keywords: [
     "image optimization",
     "image compressor",
     "image converter",
-    "webp",
-    "png",
-    "jpeg",
-    "favicon generator",
-    "og image",
+    "webp converter",
+    "jpeg converter",
+    "png converter",
+    "image compression",
+    "batch image processing",
   ],
   authors: [{ name: "Image Optimizer" }],
   creator: "Image Optimizer",

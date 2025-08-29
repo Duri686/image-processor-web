@@ -1,7 +1,7 @@
 # 🖼️ image-processor-web
 
-> A pure client-side web tool for image optimization, compression, and format conversion — all in your browser, no server required.
-> 基于纯浏览器端的图像处理工具，支持压缩、优化与格式转换，无需服务器即可完成。
+> A modern, client-side image processing tool for fast compression and format conversion. All operations are done in your browser, ensuring privacy and speed.
+> 一款现代化的纯浏览器端图片处理工具，专注于快速压缩与格式转换。所有操作均在你的浏览器中完成，快速、安全、保护隐私。
 
 [![Ask DeepWiki](https://deepwiki.com/badge.svg)](https://deepwiki.com/Duri686/image-processor-web)
 [![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
@@ -31,12 +31,12 @@
 
 ## ✨ Features / 功能特性
 
-* 📥 **Upload & Preview** – Drag & drop or select images for instant preview
-* ⚡ **Compression** – Adjustable quality, reduce file size in real time
-* 🔄 **Format Conversion** – Convert images to **WebP/PNG/JPEG**
-* 🖼️ **Favicon Generator** – Create `16x16` / `32x32` PNG favicon
-* 📰 **OG Image Generator** – Simple background + text overlay for social sharing
-* 💻 **Pure Client-side** – Runs 100% in your browser, no server required
+* 📥 **Drag & Drop Upload** – Supports dragging files or folders, and clicking to select.
+* ⚡ **Real-time Processing** – Images are automatically converted upon upload or when settings change.
+* 🔄 **Modern Format Conversion** – Convert images to next-gen **WebP** format, or universal **JPEG/PNG**.
+* 🎛️ **Adjustable Quality** – Visually adjust compression quality (for WebP/JPEG) and see the results.
+* 💻 **100% Client-Side** – All processing is done in your browser. Fast, secure, and private.
+* 📦 **Batch Operations** – Upload and process multiple images at once, then download them individually or all together.
 
 ---
 
@@ -125,10 +125,11 @@ yarn start
 
 ## 📦 Roadmap / 未来规划
 
-* [ ] 支持 AVIF 格式
-* [ ] 批量处理 / zip 导出
-* [ ] 图像裁剪 / 水印功能
-* [ ] 更丰富的 OG 图模板
+* [ ] **AVIF Support** – Add conversion support for the AVIF format.
+* [ ] **Batch Download as ZIP** – Export all converted images as a single zip file.
+* [ ] **Image Editing** – Basic tools like cropping, resizing, and watermarking.
+* [ ] **Favicon Generator** – A dedicated tool to create favicons from any image.
+* [ ] **OG Image Generator** – Simple templates for creating social media sharing images.
 
 ---
 

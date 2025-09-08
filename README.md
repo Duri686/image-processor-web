@@ -11,6 +11,7 @@
 
 
 🌐 **Live Demo:** [img.geo4ai.com](https://img.geo4ai.com)
+🌐 **chrome extension:** [webpX](https://chromewebstore.google.com/detail/cdojdjdiobjcehphmdcnifbdlhghciim?utm_source=item-share-cb) 
 
 ---
 

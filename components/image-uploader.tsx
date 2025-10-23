@@ -119,7 +119,7 @@ export function ImageUploader({
         </div>
       </div>
       <p className="text-xs text-muted-foreground mt-3 text-center">
-        Supported formats: JPEG, PNG, WebP, AVIF • Max 10MB per file
+        Supported formats: JPEG, PNG, WebP, AVIF • Max noLimit per file
       </p>
     </div>
   );
